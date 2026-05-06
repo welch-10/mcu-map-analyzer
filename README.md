@@ -121,10 +121,10 @@ Copyright (c) 2026 ウェルチ
 
 ## 📑 商標 / Trademarks
 
-CC-RL, CA78K0R, RL78 はルネサス エレクトロニクス株式会社の商標または登録商標です。
+CC-RL, CC-RX, CC-RH, CA78K0R, RL78 はルネサス エレクトロニクス株式会社の商標または登録商標です。
 本ツールはルネサス エレクトロニクス株式会社の製品ではなく、同社の公認・支援を受けたものでもありません。
 
-CC-RL, CA78K0R, and RL78 are trademarks or registered trademarks of
-Renesas Electronics Corporation. This tool is not a Renesas Electronics
+CC-RL, CC-RX, CC-RH, CA78K0R, and RL78 are trademarks or registered trademarks
+of Renesas Electronics Corporation. This tool is not a Renesas Electronics
 product and is not affiliated with or endorsed by Renesas Electronics
 Corporation.

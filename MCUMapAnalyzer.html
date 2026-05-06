@@ -2462,7 +2462,11 @@ input[type="file"] { display: none; }
 </style>
 </head>
 <body>
-<div class="app">
+<!-- [R-FOUS] 初期マークアップは "is-empty" 状態(=welcome画面表示)で出す。
+     CSS のデフォルトは map読み込み後のレイアウトのため、is-empty が付いていないと
+     初回HTMLパース時に「読み込み後の画面」が一瞬描画されるFOUS(Flash of Unwanted State)が起こる。
+     JS の App._updateLayout() は map読み込み時に is-empty を取り除く責務を持つ。 -->
+<div class="app is-empty">
 
   <!-- ====================== サイドバー ====================== -->
   <aside class="sidebar">

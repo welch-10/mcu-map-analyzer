@@ -1,0 +1,23 @@
+# 改行コードはLFで統一 (GitHub上でもLF表示、ローカルチェックアウト時もLF維持)
+* text=auto eol=lf
+
+# テキストファイル明示
+*.html  text eol=lf
+*.md    text eol=lf
+*.json  text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.js    text eol=lf
+*.css   text eol=lf
+
+# バイナリ
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+
+# Mapファイル類は機密の可能性があるためバイナリ扱い (差分・自動変換抑止)
+*.map binary
+*.lis binary

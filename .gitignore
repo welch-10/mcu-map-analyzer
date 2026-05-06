@@ -1,0 +1,39 @@
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# エディタ・IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 一時ファイル
+tmp/
+temp/
+*.tmp
+*.log
+
+# Node.js (デモ生成スクリプト用)
+node_modules/
+package-lock.json
+
+# ビルド成果物
+dist/
+build/
+
+# 個人用テストデータ・実マップファイル
+# (誤って機密のmapファイルをコミットしないよう除外)
+*.map
+*.lis
+sample_personal_*
+
+# Claudeの作業ログ等
+.claude/
+*.transcript
+
+# 環境変数
+.env
+.env.local

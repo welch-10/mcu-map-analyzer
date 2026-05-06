@@ -3,15 +3,33 @@
   GitHub Pages のエントリポイント。
   ルートURL(https://welch-10.github.io/mcu-map-analyzer/) にアクセスされたとき、
   本体ファイル MCUMapAnalyzer.html へリダイレクトする。
+
+  実装ノート:
+   ・<head> 内 <script> による location.replace() を一次手段とする。これはhead解析中に
+     同期的に発火するためbodyが描画されず、フラッシュが起こらない。
+   ・location.replace() は履歴に残らないので、ブラウザの戻るボタンが index.html に
+     戻らない (ユーザは元の参照元に直接戻れる)。
+   ・JS無効環境向けには <meta http-equiv="refresh"> をフォールバックとして残す。
+   ・<noscript> 内ではbodyを再表示するスタイルを当てて手動リンクを提示する。
+   ・query/hashも引き継ぐので ?lang=en 等の deep link が通る。
 -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <title>MCU Map Analyzer</title>
-<meta http-equiv="refresh" content="0; url=MCUMapAnalyzer.html">
 <link rel="canonical" href="MCUMapAnalyzer.html">
+<script>
+  // 即時リダイレクト (同期実行・履歴に残さず置換)
+  location.replace('MCUMapAnalyzer.html' + location.search + location.hash);
+</script>
+<meta http-equiv="refresh" content="0; url=MCUMapAnalyzer.html">
+<style>body{display:none}</style>
+<noscript><style>body{display:block}</style></noscript>
 </head>
 <body>
-<p>リダイレクト中... <a href="MCUMapAnalyzer.html">MCU Map Analyzer</a></p>
+<noscript>
+  <p>JavaScriptを有効にするか、<a href="MCUMapAnalyzer.html">こちら</a>をクリックしてください。</p>
+  <p>Please enable JavaScript or click <a href="MCUMapAnalyzer.html">here</a>.</p>
+</noscript>
 </body>
 </html>

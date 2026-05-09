@@ -1914,6 +1914,34 @@ input[type="file"] { display: none; }
 /* メイン表示カードを position: relative に（固定ツールチップの基準点） */
 .tab-content[data-tab="memmap"] .card { position: relative; }
 
+/* マウス追従ホバーツールチップ：セグメント上でファイル名だけ表示。
+   pointer-events: none で自身がホバー対象にならない（ちらつき防止）。
+   タッチ環境では非表示(タップは選択操作に専念させる)。 */
+.memmap-hover-tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: 4px 8px;
+  background: rgba(28, 28, 28, 0.92);
+  color: #fff;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  display: none;
+  max-width: 360px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+.memmap-hover-tooltip.visible { display: block; }
+@media (hover: none) {
+  .memmap-hover-tooltip { display: none !important; }
+}
+
 /* スマホ向けレスポンシブ調整 */
 @media (max-width: 600px) {
   .memmap-controls { flex-direction: column; align-items: stretch; gap: 10px; }
@@ -6480,6 +6508,9 @@ const Views = {
           Views.Memmap._clearSelection();
         }
       });
+
+      // ホバーツールチップ（マウスにくっついてファイル名表示）
+      Views.Memmap._setupHoverTooltip();
     },
 
     _clearSelection() {
@@ -6540,8 +6571,14 @@ const Views = {
             Views.Memmap._clearSelection();
           }
         });
+        /* [R-FIX] 拡大時(rowBytes小)に memmap-virt-inner の高さが数万pxに膨らむと、
+           position:absolute / top:14px の基準点が inner 上端になり画面外スクロールで見えなくなる。
+           カード直下(=position:relative の祖先で常に画面内)に append することで
+           どの拡縮率・スクロール位置でも常にカード右上に表示されるようにする。 */
         const grid = document.getElementById('memmapGrid');
-        if (grid && grid.parentElement) grid.parentElement.appendChild(ft);
+        const card = grid && grid.closest('.card');
+        if (card) card.appendChild(ft);
+        else if (grid && grid.parentElement) grid.parentElement.appendChild(ft);
       }
 
       // gap 選択の場合：未使用領域用の表示
@@ -6576,6 +6613,68 @@ const Views = {
       Views.Memmap._renderDetailList();
       Views.Memmap._refreshSelectionUI();
       Views.Memmap._updateSubtitle();
+    },
+
+    /** マウスにくっついて移動する軽量ホバーツールチップ。
+     *  グリッドへの単一委譲ハンドラで、セグメント上でファイル名を表示する。
+     *  ・per-segment にハンドラを貼らずに済むので仮想スクロール再描画と相性が良い
+     *  ・pointer-events:none + position:fixed でレイアウトに干渉しない
+     *  ・タッチ環境(@media hover:none)では CSS 側で非表示 */
+    _setupHoverTooltip() {
+      if (Views.Memmap._hoverSetup) return;
+      const grid = document.getElementById('memmapGrid');
+      if (!grid) return;
+      Views.Memmap._hoverSetup = true;
+
+      let tip = document.getElementById('memmapHoverTooltip');
+      if (!tip) {
+        tip = document.createElement('div');
+        tip.id = 'memmapHoverTooltip';
+        tip.className = 'memmap-hover-tooltip';
+        document.body.appendChild(tip);
+      }
+
+      const place = (clientX, clientY) => {
+        // カーソル右下にオフセットして表示。画面端では左上側に反転
+        const offset = 12;
+        const w = tip.offsetWidth;
+        const h = tip.offsetHeight;
+        let x = clientX + offset;
+        let y = clientY + offset;
+        if (x + w > window.innerWidth)  x = clientX - w - offset;
+        if (y + h > window.innerHeight) y = clientY - h - offset;
+        if (x < 0) x = 0;
+        if (y < 0) y = 0;
+        tip.style.transform = `translate(${x}px, ${y}px)`;
+      };
+
+      const labelFor = (idx) => {
+        if (typeof idx !== 'string' && typeof idx !== 'number') return '';
+        const s = String(idx);
+        if (s.startsWith('g')) return I18N.t('memmap.gapFile');
+        const r = AppState.mapResult;
+        const p = r && r.placements ? r.placements[parseInt(s, 10)] : null;
+        return (p && p.file) ? p.file : '';
+      };
+
+      grid.addEventListener('mouseover', (e) => {
+        const t = e.target;
+        if (!(t instanceof Element)) return;
+        const seg = t.closest('.memmap-segment');
+        if (!seg) { tip.classList.remove('visible'); return; }
+        const lbl = labelFor(seg.dataset.idx);
+        if (!lbl) { tip.classList.remove('visible'); return; }
+        tip.textContent = lbl;
+        tip.classList.add('visible');
+        place(e.clientX, e.clientY);
+      });
+      grid.addEventListener('mousemove', (e) => {
+        if (!tip.classList.contains('visible')) return;
+        place(e.clientX, e.clientY);
+      });
+      grid.addEventListener('mouseleave', () => {
+        tip.classList.remove('visible');
+      });
     },
 
     /** サブタイトル文を現在の行幅に応じて更新（自動か手動かも示す） */

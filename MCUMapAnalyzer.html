@@ -362,6 +362,41 @@ body {
   transform: translateY(0);
 }
 
+/* サンプル読込ボタン: 主要動線(welcome-btn)を邪魔しないよう
+   薄いテキストリンク風。dropzone右下に小さく表示する。
+   file:// 起動時(配布版)はJS側で hidden 制御するためデフォルト display:none. */
+.welcome-btn-sample {
+  display: none;
+  margin: 8px 4px 0 auto;
+  padding: 4px 10px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: var(--text-tiny);
+  cursor: pointer;
+  transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out);
+}
+.welcome-btn-sample.--available { display: inline-block; }
+@media (hover: hover) and (pointer: fine) {
+  .welcome-btn-sample:hover {
+    background: var(--bg-subtle);
+    color: var(--text-primary);
+  }
+}
+.welcome-btn-sample:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+/* dropzone との行揃えのため、dropzone 直後の右寄せ用の薄いラッパ */
+.welcome-sample-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: -8px; /* dropzone との空き調整 */
+}
+
 .welcome-hints {
   font-size: var(--text-tiny);
   color: var(--text-muted);
@@ -2614,6 +2649,15 @@ input[type="file"] { display: none; }
           <input type="file" id="welcomeFileInput" accept=".map,.txt,.lis" style="display:none;" aria-label="mapファイルを選択" data-i18n-attr="aria-label:welcome.fileInputAria">
         </div>
 
+        <!-- サンプル読み込みボタン: GitHub Pages 等のHTTP(S)コンテキストでのみ JS が表示する。
+             file:// 起動(配布版)では fetch 不可なので非表示のまま. -->
+        <div class="welcome-sample-row">
+          <button type="button" class="welcome-btn-sample" id="welcomeSampleBtn"
+                  data-i18n="welcome.sample.btn"
+                  data-i18n-attr="title:welcome.sample.tip"
+                  title="リポジトリのサンプル map ファイルを読み込みます">サンプルファイルを解析</button>
+        </div>
+
         <div class="welcome-hints">
           <b data-i18n="welcome.hint.compilers">対応コンパイラ</b>: CC-RL / CA78K0R<br>
           <b data-i18n="welcome.hint.future">将来対応予定</b>: CC-RX / CC-RH<br>
@@ -2970,6 +3014,10 @@ const I18N = {
     'welcome.dropzone.btn':     { ja: '📁 ファイルを選択',       en: '📁 Choose File' },
     'welcome.dropzone.btnAria': { ja: 'mapファイルを選択ダイアログから開く', en: 'Open file picker to choose a map file' },
     'welcome.fileInputAria':    { ja: 'mapファイルを選択',        en: 'Select map file' },
+    'welcome.sample.btn':       { ja: 'サンプルファイルを解析',    en: 'Try sample file' },
+    'welcome.sample.tip':       { ja: 'リポジトリの匿名化済みサンプル(RL78/G23 384KB品)を読み込みます', en: 'Load the anonymized sample map (RL78/G23 384KB) from the repository' },
+    'welcome.sample.loading':   { ja: 'サンプル読み込み中...',     en: 'Loading sample...' },
+    'welcome.sample.failed':    { ja: 'サンプル読み込み失敗: {msg}\n※ サンプル読み込みは GitHub Pages 版でのみ動作します。', en: 'Sample load failed: {msg}\n* Sample loading only works on the GitHub Pages version.' },
     'welcome.hint.compilers':   { ja: '対応コンパイラ',           en: 'Supported compilers' },
     'welcome.hint.future':      { ja: '将来対応予定',             en: 'Future support planned' },
     'welcome.hint.format':      { ja: '対応形式',                 en: 'Supported formats' },
@@ -7733,6 +7781,39 @@ const App = {
         (f) => App.loadMap(f, key)
       );
     }
+    App._setupSampleButton();
+  },
+
+  /** サンプル読み込みボタン:
+   *  HTTP(S) で配信されている時(=GitHub Pages 等)のみ表示・有効化。
+   *  file:// 起動(=ローカル配布版を直接開いた場合)は fetch が CORS で失敗するので
+   *  ボタン自体を非表示のままにする。
+   *  サンプル本体は repo の docs/samples/sample_ccrl.map を相対パスで取得し、
+   *  既存の loadMap フローに File オブジェクトとして流し込んで再利用する. */
+  _setupSampleButton() {
+    const btn = document.getElementById('welcomeSampleBtn');
+    if (!btn) return;
+    const proto = (typeof location !== 'undefined') ? location.protocol : '';
+    const fetchable = (proto === 'http:' || proto === 'https:');
+    if (!fetchable) return;  // 配布版(file://): ボタン非表示のまま
+    btn.classList.add('--available');
+    btn.addEventListener('click', async () => {
+      const origLabel = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = I18N.t('welcome.sample.loading');
+      try {
+        const res = await fetch('docs/samples/sample_ccrl.map', { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const blob = await res.blob();
+        const file = new File([blob], 'sample_ccrl.map', { type: 'text/plain' });
+        App.loadMap(file, 'A');
+      } catch (err) {
+        App._showError(I18N.t('welcome.sample.failed', { msg: err.message }));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = origLabel;
+      }
+    });
   },
 
   _setupNav() {

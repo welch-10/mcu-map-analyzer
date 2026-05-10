@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-05-10
+
 ### Added
 - 多言語対応を 14 言語に拡張: 简体中文 / 繁體中文 / 한국어 / Tiếng Việt / ไทย / Bahasa Indonesia / Français / Italiano / Español / Português / Polski / Deutsch
 - ロケール対応の数値整形 (`Util.fmtFixed/fmtFloat/fmtKB/fmtNumber` を `toLocaleString` ベースに改修。ドイツ語の `1.234,56` 等に追従)
@@ -28,6 +30,7 @@
 ### Changed
 - `Util.fmtPct` を `Util.fmtFixed` にリネーム (用途の明確化)
 - 商標表記に CC-RX / CC-RH を追加
+- README をモバイル機能の前面アピールから外す調整 (動作はするが PC 利用前提)
 
 ## [1.0.0] - 2026-05-04
 
@@ -48,5 +51,6 @@
 - ライセンス: MIT
 - 単一HTML配布（依存ライブラリなし、サーバ通信なし）
 
-[Unreleased]: https://github.com/welch-10/mcu-map-analyzer/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/welch-10/mcu-map-analyzer/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/welch-10/mcu-map-analyzer/releases/tag/v1.1.0
 [1.0.0]: https://github.com/welch-10/mcu-map-analyzer/releases/tag/v1.0.0

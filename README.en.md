@@ -22,7 +22,6 @@ It runs entirely in the browser as a **single HTML file** — easy to distribute
 - 🔒 **Fully offline** — Files are parsed locally; nothing is sent to any server
 - 🌐 **14 languages** — 日本語 / English / 简体中文 / 繁體中文 / 한국어 / Tiếng Việt / ไทย / Bahasa Indonesia / Français / Italiano / Español / Português / Polski / Deutsch
 - 🔢 **Locale-aware number formatting** — `1.234,56` (German / Italian / Spanish / Portuguese / Dutch) / `1 234 567` (French / Polish) / `1,234.56` (English / Japanese / Chinese / Korean / Thai) automatically
-- 📱 **Mobile friendly** — Works on Android Chrome / iOS Safari
 - 🎨 **Intuitive UI** — Big-picture ROM usage and memory layout
 - 🔍 **Interactive memory map** — Cursor-anchored zoom on Alt+wheel, file name on hover
 - 🪞 **Mirror area utilization visible** — See exactly how much of the RL78 hardware mirror region is occupied, in one screen
@@ -67,8 +66,8 @@ Click **"Try sample file"** to load the anonymized sample with one click (GitHub
 | Chrome / Edge | 90+ | April 2021+ |
 | Firefox | 103+ | July 2022+ (backdrop-filter) |
 | Safari | 16+ | September 2022+ (`:has()` / `replaceChildren()`) |
-| Android Chrome | 90+ | Mobile |
-| iOS Safari | 16+ | Mobile |
+
+Designed primarily for desktop browsers. Mobile browsers do work, but the small screen limits usability.
 
 ## 📊 Analysis Features
 

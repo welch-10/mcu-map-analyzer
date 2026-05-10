@@ -3461,6 +3461,12 @@ const Util = {
     return Number(n).toLocaleString(I18N.localeTag(),
       { minimumFractionDigits: digits, maximumFractionDigits: digits });
   },
+  /** 可変小数桁(末尾0は省略) の locale-aware 整形.
+   *  例: 8 → "8", 49.75 → "49.75" (ja/en/zh) / "49,75" (de). max 省略時は2. */
+  fmtFloat(n, max = 2) {
+    return Number(n).toLocaleString(I18N.localeTag(),
+      { maximumFractionDigits: max });
+  },
   fmtHex(n) { return '0x' + n.toString(16).toUpperCase(); },
   /** アドレス値をHEX表示する。ROM容量に応じて桁数を揃えてゼロパディング。
    *  例:
@@ -5840,7 +5846,7 @@ const Views = {
       const mInfo = r.mirrorInfo && r.mirrorInfo.device;
       if (mInfo) {
         if (mInfo.hasMirror) {
-          mirrorBadge = `${mInfo.sizeKB}KB`;
+          mirrorBadge = `${Util.fmtFloat(mInfo.sizeKB)}KB`;
           if (mInfo.estimated) mirrorBadge += ` <span style="opacity:0.6">${Util.escapeHtml(I18N.t('badge.estimated'))}</span>`;
         } else {
           mirrorBadge = `<span style="opacity:0.6">${Util.escapeHtml(I18N.t('badge.none'))}</span>`;
@@ -5949,7 +5955,7 @@ const Views = {
         const fmt = (addr) => Util.fmtAddrPadded(addr, romB, padHint);
         const lowerHex = fmt(mDevice.lower);
         const upperHex = fmt(mDevice.upper);
-        const sizeStr = `${mDevice.sizeKB} KB`;
+        const sizeStr = `${Util.fmtFloat(mDevice.sizeKB)} KB`;
 
         let dfRow = '';
         if (mDevice.dfMirror) {
@@ -5957,7 +5963,7 @@ const Views = {
           const dfHi = fmt(mDevice.dfMirror.upper);
           dfRow = `
             <dt>${Util.escapeHtml(I18N.t('mirror.label.dfMirror'))}</dt>
-            <dd>${dfLo}-${dfHi} (${mDevice.dfMirror.sizeKB} KB)</dd>`;
+            <dd>${dfLo}-${dfHi} (${Util.fmtFloat(mDevice.dfMirror.sizeKB)} KB)</dd>`;
         }
 
         /* ミラー元領域の物理アドレス範囲(マップから推定したbank反映)。

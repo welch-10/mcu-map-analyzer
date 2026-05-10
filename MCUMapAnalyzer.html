@@ -3336,6 +3336,18 @@ const I18N = {
   /** 現在言語のコードを返す */
   getLang() { return I18N.current; },
 
+  /** 現在言語に対応する BCP47 ロケールタグ.
+   *  数値整形(toLocaleString)の引数として使用する.
+   *  未知言語/未設定時は en-US にフォールバック. */
+  localeTag() {
+    return ({
+      'ja': 'ja-JP',
+      'en': 'en-US',
+      'zh': 'zh-CN',
+      'de': 'de-DE',
+    })[I18N.current] || 'en-US';
+  },
+
   /** 言語を切り替える。localStorage に保存し、DOM にも適用する。
    *  @param lang LANG.JA / LANG.EN 等 */
   setLang(lang) {
@@ -3432,9 +3444,23 @@ const I18N = {
 I18N.init();
 
 const Util = {
-  fmtNumber(n) { return n.toLocaleString('ja-JP'); },
-  fmtKB(b) { return (b / 1024).toFixed(1); },
-  fmtPct(n) { return n.toFixed(1); },
+  /* 数値整形は I18N の現在言語に応じた locale で行う(BCP47タグ).
+     ja/en/zh: 千区切り `,` 小数点 `.`
+     de:        千区切り `.` 小数点 `,`
+     CSV出力は別経路 (Util.csvEscape を経由) で英語固定のまま運用する. */
+  fmtNumber(n) {
+    return Number(n).toLocaleString(I18N.localeTag());
+  },
+  fmtKB(b) {
+    return (b / 1024).toLocaleString(I18N.localeTag(),
+      { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  },
+  /** 小数N桁の数値を locale 規則で整形 (% 記号は呼出側で付ける).
+   *  digits 省略時は1 (既存挙動互換). */
+  fmtPct(n, digits = 1) {
+    return Number(n).toLocaleString(I18N.localeTag(),
+      { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  },
   fmtHex(n) { return '0x' + n.toString(16).toUpperCase(); },
   /** アドレス値をHEX表示する。ROM容量に応じて桁数を揃えてゼロパディング。
    *  例:
@@ -5340,7 +5366,7 @@ const Compare = {
     const commonRatio = totalUnique > 0 ? commonCount / totalUnique : 0;
 
     if (commonRatio < 0.30) {
-      warnings.push(I18N.t('compare.warn.lowCommon', {pct: (commonRatio * 100).toFixed(0)}));
+      warnings.push(I18N.t('compare.warn.lowCommon', {pct: Util.fmtPct(commonRatio * 100, 0)}));
     }
 
     return {
@@ -5762,7 +5788,7 @@ const Views = {
           const hasWarn = cmp.precheck.warnings.length > 0;
           const status = hasWarn ? '--warn' : '--ok';
           panel.className = `integrity-panel ${status}`;
-          const pctStr = cmp.summary.diffPct === null ? '-' : sign + cmp.summary.diffPct.toFixed(2) + '%';
+          const pctStr = cmp.summary.diffPct === null ? '-' : sign + Util.fmtPct(cmp.summary.diffPct, 2) + '%';
           panel.innerHTML = `
             <div class="integrity-status">${hasWarn ? '⚠' : '✓'} ${Util.escapeHtml(I18N.t('integrity.compareDone'))}</div>
             <div class="integrity-detail">${Util.escapeHtml(I18N.t('integrity.diffSummary', {sign, n: Util.fmtNumber(cmp.summary.diff), pct: pctStr}))}</div>
@@ -7203,7 +7229,7 @@ const Views = {
         // 使用率
         const usageEl = document.createElement('div');
         usageEl.className = 'memmap-row-usage';
-        usageEl.textContent = used === 0 ? '-' : usedPct.toFixed(0) + '%';
+        usageEl.textContent = used === 0 ? '-' : Util.fmtPct(usedPct, 0) + '%';
         rowEl.appendChild(usageEl);
 
         frag.appendChild(rowEl);
@@ -7421,7 +7447,7 @@ const Views = {
           ${tpl.kpiCard({
             label: I18N.t('compare.kpi.diff'),
             value: `${dSign}${Util.fmtNumber(d)}<span class="kpi-unit">B</span>`,
-            sub:   dPct === null ? I18N.t('compare.kpi.diffSubNoBase') : I18N.t('compare.kpi.diffSub', {sign: dSign, pct: dPct.toFixed(2)}),
+            sub:   dPct === null ? I18N.t('compare.kpi.diffSubNoBase') : I18N.t('compare.kpi.diffSub', {sign: dSign, pct: Util.fmtPct(dPct, 2)}),
             kind:  dCls,
           })}
           ${tpl.kpiCard({
@@ -7436,7 +7462,7 @@ const Views = {
           })}
           ${tpl.kpiCard({
             label: I18N.t('compare.kpi.commonRatio'),
-            value: `${(stats.commonRatio * 100).toFixed(0)}<span class="kpi-unit">%</span>`,
+            value: `${Util.fmtPct(stats.commonRatio * 100, 0)}<span class="kpi-unit">%</span>`,
             // [R-040] 分母は「全ユニークファイル数」(baseSet ∪ targetSet)。
             // Compare.precheck で baseTotal=baseSet.size を返しているため
             // baseTotal + targetOnly = commonCount + baseOnly + targetOnly = ユニーク総数 と等価。
@@ -7857,7 +7883,7 @@ const App = {
     // サイズ上限チェック（過大ファイル対策、Constants.MAX_FILE_SIZE_MB MB）
     const maxSize = Constants.MAX_FILE_SIZE_MB * 1024 * 1024;
     if (file.size > maxSize) {
-      App._showError(I18N.t('error.tooLarge', {mb: (file.size/1024/1024).toFixed(1), maxMb: Constants.MAX_FILE_SIZE_MB}));
+      App._showError(I18N.t('error.tooLarge', {mb: Util.fmtPct(file.size/1024/1024, 1), maxMb: Constants.MAX_FILE_SIZE_MB}));
       return;
     }
     const cfg = SLOTS[slot];

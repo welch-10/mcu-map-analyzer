@@ -6499,35 +6499,57 @@ const Views = {
           });
         }, { passive: true });
 
-        // Alt+ホイールで拡縮（PCのみ実用、スマホはピンチ非対応で代替UIあり）
+        // Alt+ホイールで拡縮（PCのみ実用、スマホはピンチ非対応で代替UIあり）。
+        // マウスカーソル位置のアドレスを基準点として、拡縮後もカーソル位置に
+        // 同じアドレスが来るようスクロールする(画像ビューア等で一般的なUX)。
         vp.addEventListener('wheel', (e) => {
           if (!e.altKey) return;
           e.preventDefault();
-          // 拡縮前のフォーカス位置を保存
-          const focusAddr = Views.Memmap._currentFocusAddress();
+
+          // 拡縮前: マウス位置(viewport内Y座標) のアドレスを記録
+          const vpRect = vp.getBoundingClientRect();
+          let mouseY = e.clientY - vpRect.top;
+          // viewport の縦範囲内にクランプ(端でホイール時の挙動を安定化)
+          mouseY = Math.max(0, Math.min(vp.clientHeight, mouseY));
+          const vBefore = Views.Memmap._vstate;
+          const oldRowHeight = vBefore ? vBefore.rowHeight : 26;
+          const oldRowBytes  = Views.Memmap._currentRowBytes();
+          const focusRow  = Math.floor((vp.scrollTop + mouseY) / oldRowHeight);
+          const focusAddr = focusRow * oldRowBytes;
+
+          // 行幅候補を1段階シフト
           const opts = Views.Memmap.ROW_BYTES_OPTIONS;
-          const cur = Views.Memmap._currentRowBytes();
-          let i = opts.indexOf(cur);
+          let i = opts.indexOf(oldRowBytes);
           if (i < 0) {
             // 候補に無い値なら近いものに丸めてからシフト
             i = 0;
             let bestDiff = Infinity;
             for (let k = 0; k < opts.length; k++) {
-              const d = Math.abs(Math.log2(opts[k]) - Math.log2(cur));
+              const d = Math.abs(Math.log2(opts[k]) - Math.log2(oldRowBytes));
               if (d < bestDiff) { i = k; bestDiff = d; }
             }
           }
           // ホイール上方向(deltaY<0)で拡大=行幅小さく(i減)、下方向で縮小(i増)
           if (e.deltaY < 0) i = Math.max(0, i - 1);
           else              i = Math.min(opts.length - 1, i + 1);
+          if (opts[i] === oldRowBytes) return;  // 端で動かないなら何もしない
+
           Views.Memmap._state.rowBytes = opts[i];
           Views.Memmap._state.rowBytesManual = true;
-          // セレクトボックスも追従
-          const sel = document.getElementById('memmapRowBytesSelect');
-          if (sel) sel.value = String(opts[i]);
+          const selBox = document.getElementById('memmapRowBytesSelect');
+          if (selBox) selBox.value = String(opts[i]);
           Views.Memmap._renderAll();
-          // 拡縮後、フォーカス位置が画面中央に来るようスクロール
-          Views.Memmap._scrollAddrToCenter(focusAddr);
+
+          // 拡縮後: focusAddr が マウス位置(mouseY) に来るよう scrollTop を調整
+          const vAfter = Views.Memmap._vstate;
+          if (!vAfter) return;
+          const newRowHeight = vAfter.rowHeight;
+          const newRowBytes  = vAfter.rowBytes;
+          const targetRow = Math.floor(focusAddr / newRowBytes);
+          const targetY   = targetRow * newRowHeight;
+          const maxScroll = Math.max(0, vAfter.numRows * newRowHeight - vp.clientHeight);
+          vp.scrollTop = Math.max(0, Math.min(maxScroll, targetY - mouseY));
+          Views.Memmap._renderVisibleRows();
         }, { passive: false });
       }
 

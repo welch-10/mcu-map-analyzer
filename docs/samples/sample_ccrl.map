@@ -82,10 +82,10 @@ Renesas Optimizing Linker (V3.07.00 )             28-Apr-2026 17:20:21
 -VECT=_dummy
 -LISt=DefaultBuild\Map\SAMPLE_PROJ_001.map
 -SHow=SYmbol,Xreference,Total_size,VECTOR,STRUCT
--STARt=.text/00100,seg_01/01000,.const/03000,seg_02/10000,seg_03/1E000,seg_04/20000,.RLIB,.SLIB,.constf,.textf,.data,.sdata,seg_05,seg_06,seg_07/28000,seg_08/F7F00,.dataR,.bss,seg_09/F7F02,.stack_bss:seg_10/FE3A0,seg_11/FEBA0,seg_12/FEBE0,seg_13/FEBF0,seg_14/FEC10,seg_15/FEC30,seg_16/FEC70,seg_17/FECB0,seg_18/FECF0,seg_19/FED30,seg_20/FED70,seg_21/FED80,seg_22/FED90,seg_23/FEDB0,seg_24/FEDD0,seg_25/FEDE0,seg_26/FEDF0,seg_27/FEE00,seg_28/FEE10,seg_29/FEE20,seg_30/FEE60,seg_31/FEEA0,seg_32/FEEB0,seg_33/FEEC0,seg_34/FEED0,seg_35/FEEF0,seg_36/FEF50,seg_37/FEF60,seg_38/FEF70,seg_39/FEF80,seg_40/FEF90,seg_41/FEFA0,seg_42/FEFB0,seg_43/FEFF0,seg_44/FF090,seg_45/FF0A0,seg_46/FF0B0,seg_47/FF0D0,seg_48/FF0E0,seg_49/FF0F0,seg_50/FF100,seg_51/FFB40,seg_52/FFB50,seg_53/FFB90,seg_54/FFBA0,seg_55/FFDA0,seg_56/FFE1C,seg_57/FFE1E,.sdataR,.sbss/FFE20
+-STARt=.text/00100,data_a01_f/01000,.const/03000,data_a02_f/10000,data_a03_f/1E000,data_a04_f/20000,.RLIB,.SLIB,.constf,.textf,.data,.sdata,RFD_DATA_n,RFD_CMN_f,RFD_DF_f/28000,seg_01_n/F7F00,.dataR,.bss,RFD_data_b05/F7F02,.stack_bss:seg_02_n/FE3A0,seg_03_n/FEBA0,seg_04_n/FEBE0,seg_05_n/FEBF0,seg_06_n/FEC10,seg_07_n/FEC30,seg_08_n/FEC70,seg_09_n/FECB0,seg_10_n/FECF0,seg_11_n/FED30,seg_12_n/FED70,seg_13_n/FED80,seg_14_n/FED90,seg_15_n/FEDB0,seg_16_n/FEDD0,seg_17_n/FEDE0,seg_18_n/FEDF0,seg_19_n/FEE00,seg_20_n/FEE10,seg_21_n/FEE20,seg_22_n/FEE60,seg_23_n/FEEA0,seg_24_n/FEEB0,seg_25_n/FEEC0,seg_26_n/FEED0,seg_27_n/FEEF0,seg_28_n/FEF50,seg_29_n/FEF60,seg_30_n/FEF70,seg_31_n/FEF80,seg_32_n/FEF90,seg_33_n/FEFA0,seg_34_n/FEFB0,seg_35_n/FEFF0,seg_36_n/FF090,seg_37_n/FF0A0,seg_38_n/FF0B0,seg_39_n/FF0D0,seg_40_n/FF0E0,seg_41_n/FF0F0,seg_42_n/FF100,seg_43_n/FFB40,seg_44_n/FFB50,seg_45_n/FFB90,seg_46_n/FFBA0,seg_47_n/FFDA0,seg_48_n/FFE1C,seg_49_n/FFE1E,.sdataR,.sbss/FFE20
 -ROm=.data=.dataR
 -ROm=.sdata=.sdataR
--ROm=seg_05=seg_09
+-ROm=RFD_DATA_n=RFD_data_b05
 -NOMessage
 -STACk
 -Total_size
@@ -105,15 +105,15 @@ SECTION                            START      END         SIZE   ALIGN
                                   000000c4  000000cd         a   1
 .text
                                   00000100  000008f2       7f3   1
-seg_01
+data_a01_f
                                   00001000  0000f37f      e380   2
 .const
                                   00003000  00003000         0   2
-seg_02
+data_a02_f
                                   00010000  0001cbbf      cbc0   2
-seg_03
+data_a03_f
                                   0001e000  0001f067      1068   2
-seg_04
+data_a04_f
                                   00020000  0002761f      7620   2
 .RLIB
                                   00028000  000283db       3dc   1
@@ -127,117 +127,117 @@ seg_04
                                   0005d43c  0005d43c         1   2
 .sdata
                                   0005d43e  0005d43e         0   2
-seg_05
+RFD_DATA_n
                                   0005d43e  0005d442         5   2
-seg_06
+RFD_CMN_f
                                   0005d443  0005d5a3       161   1
-seg_07
+RFD_DF_f
                                   0005d5a4  0005d5eb        48   1
-seg_08
+seg_01_n
                                   000f7f00  000f7f00         1   2
 .dataR
                                   000f7f02  000f7f02         1   2
 .bss
                                   000f7f04  000fb03b      3138   2
-seg_09
+RFD_data_b05
                                   000fb03c  000fb040         5   2
 .stack_bss
                                   000fe3a0  000fe79f       400   2
-seg_10
+seg_02_n
                                   000fe3a0  000fe3a0         1   2
-seg_11
+seg_03_n
                                   000feba0  000febbf        20   2
-seg_12
+seg_04_n
                                   000febe0  000febe3         4   2
-seg_13
+seg_05_n
                                   000febf0  000febff        10   2
-seg_14
+seg_06_n
                                   000fec10  000fec1f        10   2
-seg_15
+seg_07_n
                                   000fec30  000fec43        14   2
-seg_16
+seg_08_n
                                   000fec70  000fec8b        1c   2
-seg_17
+seg_09_n
                                   000fecb0  000feccf        20   2
-seg_18
+seg_10_n
                                   000fecf0  000fed03        14   2
-seg_19
+seg_11_n
                                   000fed30  000fed45        16   2
-seg_20
+seg_12_n
                                   000fed70  000fed75         6   2
-seg_21
+seg_13_n
                                   000fed80  000fed81         2   2
-seg_22
+seg_14_n
                                   000fed90  000fed9f        10   2
-seg_23
+seg_15_n
                                   000fedb0  000fedbf        10   2
-seg_24
+seg_16_n
                                   000fedd0  000fedd7         8   2
-seg_25
+seg_17_n
                                   000fede0  000fede7         8   2
-seg_26
+seg_18_n
                                   000fedf0  000fedf7         8   2
-seg_27
+seg_19_n
                                   000fee00  000fee07         8   2
-seg_28
+seg_20_n
                                   000fee10  000fee11         2   2
-seg_29
+seg_21_n
                                   000fee20  000fee3f        20   2
-seg_30
+seg_22_n
                                   000fee60  000fee7f        20   2
-seg_31
+seg_23_n
                                   000feea0  000feea3         4   2
-seg_32
+seg_24_n
                                   000feeb0  000feeb1         2   2
-seg_33
+seg_25_n
                                   000feec0  000feec7         8   2
-seg_34
+seg_26_n
                                   000feed0  000feedb         c   2
-seg_35
+seg_27_n
                                   000feef0  000fef17        28   2
-seg_36
+seg_28_n
                                   000fef50  000fef57         8   2
-seg_37
+seg_29_n
                                   000fef60  000fef63         4   2
-seg_38
+seg_30_n
                                   000fef70  000fef77         8   2
-seg_39
+seg_31_n
                                   000fef80  000fef87         8   2
-seg_40
+seg_32_n
                                   000fef90  000fef95         6   2
-seg_41
+seg_33_n
                                   000fefa0  000fefa3         4   2
-seg_42
+seg_34_n
                                   000fefb0  000fefc7        18   2
-seg_43
+seg_35_n
                                   000feff0  000ff033        44   2
-seg_44
+seg_36_n
                                   000ff090  000ff097         8   2
-seg_45
+seg_37_n
                                   000ff0a0  000ff0a5         6   2
-seg_46
+seg_38_n
                                   000ff0b0  000ff0bb         c   2
-seg_47
+seg_39_n
                                   000ff0d0  000ff0d3         4   2
-seg_48
+seg_40_n
                                   000ff0e0  000ff0e1         2   2
-seg_49
+seg_41_n
                                   000ff0f0  000ff0f1         2   2
-seg_50
+seg_42_n
                                   000ff100  000ff10b         c   2
-seg_51
+seg_43_n
                                   000ffb40  000ffb45         6   2
-seg_52
+seg_44_n
                                   000ffb50  000ffb5f        10   2
-seg_53
+seg_45_n
                                   000ffb90  000ffb91         2   2
-seg_54
+seg_46_n
                                   000ffba0  000ffd23       184   2
-seg_55
+seg_47_n
                                   000ffda0  000ffde8        49   2
-seg_56
+seg_48_n
                                   000ffe1c  000ffe1c         1   2
-seg_57
+seg_49_n
                                   000ffe1e  000ffe1e         1   2
 .sdataR
                                   000ffe20  000ffe20         0   2
@@ -328,7 +328,7 @@ FILE=DefaultBuild\Temp\module_059.obj
   _sym_00014
                                   000008f2         0   none ,g         0
 
-SECTION=seg_01
+SECTION=data_a01_f
 FILE=DefaultBuild\Temp\module_020.obj
                                   00001000  0000f37f      e380
   _sym_00015
@@ -534,7 +534,7 @@ FILE=DefaultBuild\Temp\module_020.obj
   _sym_00115
                                   0000f100       280   data ,g         2
 
-SECTION=seg_02
+SECTION=data_a02_f
 FILE=DefaultBuild\Temp\module_020.obj
                                   00010000  0001cbbf      cbc0
   _sym_00116
@@ -724,7 +724,7 @@ FILE=DefaultBuild\Temp\module_020.obj
   _sym_00208
                                   0001ca80       140   data ,g         6
 
-SECTION=seg_03
+SECTION=data_a03_f
 FILE=DefaultBuild\Temp\module_024.obj
                                   0001e000  0001f067      1068
   _sym_00209
@@ -960,7 +960,7 @@ FILE=DefaultBuild\Temp\module_024.obj
   _sym_00324
                                   0001f054        14   data ,g         2
 
-SECTION=seg_04
+SECTION=data_a04_f
 FILE=DefaultBuild\Temp\module_025.obj
                                   00020000  0002761f      7620
   _sym_00325
@@ -15208,13 +15208,13 @@ SECTION=.data
 FILE=DefaultBuild\Temp\module_009.obj
                                   0005d43c  0005d43c         1
 
-SECTION=seg_05
+SECTION=RFD_DATA_n
 FILE=DefaultBuild\Temp\module_062.obj
                                   0005d43e  0005d43e         1
 FILE=DefaultBuild\Temp\module_064.obj
                                   0005d440  0005d442         3
 
-SECTION=seg_06
+SECTION=RFD_CMN_f
 FILE=DefaultBuild\Temp\module_062.obj
                                   0005d443  0005d456        14
   _sym_06868
@@ -15256,7 +15256,7 @@ FILE=DefaultBuild\Temp\module_065.obj
   _sym_06884
                                   0005d5a2         2   func ,g         0
 
-SECTION=seg_07
+SECTION=RFD_DF_f
 FILE=DefaultBuild\Temp\module_063.obj
                                   0005d5a4  0005d5eb        48
   _sym_06885
@@ -15266,7 +15266,7 @@ FILE=DefaultBuild\Temp\module_063.obj
   _sym_06887
                                   0005d5d2        1a   func ,g         1
 
-SECTION=seg_08
+SECTION=seg_01_n
 FILE=DefaultBuild\Temp\module_053.obj
                                   000f7f00  000f7f00         1
   _sym_06888
@@ -25417,7 +25417,7 @@ FILE=DefaultBuild\Temp\module_056.obj
                                   000fb03a         1   unsigned char
     }
 
-SECTION=seg_09
+SECTION=RFD_data_b05
 FILE=DefaultBuild\Temp\module_062.obj
                                   000fb03c  000fb03c         1
   _sym_11056
@@ -25439,13 +25439,13 @@ FILE=DefaultBuild\Temp\module_059.obj
   _sym_11061
                                   000fe7a0         0   none ,l         1
 
-SECTION=seg_10
+SECTION=seg_02_n
 FILE=DefaultBuild\Temp\module_053.obj
                                   000fe3a0  000fe3a0         1
   _sym_11062
                                   000fe3a0         1   data ,l         3
 
-SECTION=seg_11
+SECTION=seg_03_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000feba0  000febbf        20
   _sym_11063
@@ -25493,7 +25493,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000feba0        20   unsigned char
     }
 
-SECTION=seg_12
+SECTION=seg_04_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000febe0  000febe3         4
   _sym_11082
@@ -25513,7 +25513,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000febe0         4   unsigned char
     }
 
-SECTION=seg_13
+SECTION=seg_05_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000febf0  000febff        10
   _sym_11087
@@ -25545,7 +25545,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000febf0        10   unsigned char
     }
 
-SECTION=seg_14
+SECTION=seg_06_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fec10  000fec1f        10
   _sym_11098
@@ -25563,7 +25563,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fec10        10   unsigned char
     }
 
-SECTION=seg_15
+SECTION=seg_07_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fec30  000fec43        14
   _sym_11102
@@ -25581,7 +25581,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fec30        14   unsigned char
     }
 
-SECTION=seg_16
+SECTION=seg_08_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fec70  000fec8b        1c
   _sym_11106
@@ -25625,7 +25625,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fec70        1c   unsigned char
     }
 
-SECTION=seg_17
+SECTION=seg_09_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fecb0  000feccf        20
   _sym_11123
@@ -25705,7 +25705,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fecb0        20   unsigned char
     }
 
-SECTION=seg_18
+SECTION=seg_10_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fecf0  000fed03        14
   _sym_11158
@@ -25725,7 +25725,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fecf0        14   unsigned char
     }
 
-SECTION=seg_19
+SECTION=seg_11_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fed30  000fed45        16
   _sym_11163
@@ -25765,7 +25765,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fed30        16   unsigned char
     }
 
-SECTION=seg_20
+SECTION=seg_12_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fed70  000fed75         6
   _sym_11178
@@ -25783,7 +25783,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fed70         6   unsigned char
     }
 
-SECTION=seg_21
+SECTION=seg_13_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fed80  000fed81         2
   _sym_11182
@@ -25803,7 +25803,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fed80         2   unsigned char
     }
 
-SECTION=seg_22
+SECTION=seg_14_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fed90  000fed9f        10
   _sym_11187
@@ -25851,7 +25851,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fed90        10   unsigned char
     }
 
-SECTION=seg_23
+SECTION=seg_15_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fedb0  000fedbf        10
   _sym_11206
@@ -25899,7 +25899,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fedb0        10   unsigned char
     }
 
-SECTION=seg_24
+SECTION=seg_16_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fedd0  000fedd7         8
   _sym_11225
@@ -25931,7 +25931,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fedd0         8   unsigned char
     }
 
-SECTION=seg_25
+SECTION=seg_17_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fede0  000fede7         8
   _sym_11236
@@ -25963,7 +25963,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fede0         8   unsigned char
     }
 
-SECTION=seg_26
+SECTION=seg_18_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fedf0  000fedf7         8
   _sym_11247
@@ -25995,7 +25995,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fedf0         8   unsigned char
     }
 
-SECTION=seg_27
+SECTION=seg_19_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fee00  000fee07         8
   _sym_11258
@@ -26027,7 +26027,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fee00         8   unsigned char
     }
 
-SECTION=seg_28
+SECTION=seg_20_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fee10  000fee11         2
   _sym_11269
@@ -26045,7 +26045,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fee10         2   unsigned char
     }
 
-SECTION=seg_29
+SECTION=seg_21_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fee20  000fee3f        20
   _sym_11273
@@ -26125,7 +26125,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fee20        20   unsigned char
     }
 
-SECTION=seg_30
+SECTION=seg_22_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fee60  000fee7f        20
   _sym_11308
@@ -26157,7 +26157,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fee60        20   unsigned char
     }
 
-SECTION=seg_31
+SECTION=seg_23_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000feea0  000feea3         4
   _sym_11319
@@ -26177,7 +26177,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000feea0         4   unsigned char
     }
 
-SECTION=seg_32
+SECTION=seg_24_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000feeb0  000feeb1         2
   _sym_11324
@@ -26197,7 +26197,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000feeb0         2   unsigned char
     }
 
-SECTION=seg_33
+SECTION=seg_25_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000feec0  000feec7         8
   _sym_11329
@@ -26221,7 +26221,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000feec0         8   unsigned char
     }
 
-SECTION=seg_34
+SECTION=seg_26_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000feed0  000feedb         c
   _sym_11336
@@ -26261,7 +26261,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000feed0         c   unsigned char
     }
 
-SECTION=seg_35
+SECTION=seg_27_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000feef0  000fef17        28
   _sym_11351
@@ -26279,7 +26279,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000feef0        28   unsigned char
     }
 
-SECTION=seg_36
+SECTION=seg_28_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fef50  000fef57         8
   _sym_11355
@@ -26297,7 +26297,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fef50         8   unsigned char
     }
 
-SECTION=seg_37
+SECTION=seg_29_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fef60  000fef63         4
   _sym_11359
@@ -26315,7 +26315,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fef60         4   unsigned char
     }
 
-SECTION=seg_38
+SECTION=seg_30_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fef70  000fef77         8
   _sym_11363
@@ -26339,7 +26339,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fef70         8   unsigned char
     }
 
-SECTION=seg_39
+SECTION=seg_31_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fef80  000fef87         8
   _sym_11370
@@ -26387,7 +26387,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fef80         8   unsigned char
     }
 
-SECTION=seg_40
+SECTION=seg_32_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fef90  000fef95         6
   _sym_11389
@@ -26427,7 +26427,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fef90         6   unsigned char
     }
 
-SECTION=seg_41
+SECTION=seg_33_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fefa0  000fefa3         4
   _sym_11404
@@ -26447,7 +26447,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fefa0         4   unsigned char
     }
 
-SECTION=seg_42
+SECTION=seg_34_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000fefb0  000fefc7        18
   _sym_11409
@@ -26487,7 +26487,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000fefb0        18   unsigned char
     }
 
-SECTION=seg_43
+SECTION=seg_35_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000feff0  000ff033        44
   _sym_11424
@@ -26571,7 +26571,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000feff0        44   unsigned char
     }
 
-SECTION=seg_44
+SECTION=seg_36_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000ff090  000ff097         8
   _sym_11461
@@ -26603,7 +26603,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000ff090         8   unsigned char
     }
 
-SECTION=seg_45
+SECTION=seg_37_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000ff0a0  000ff0a5         6
   _sym_11472
@@ -26621,7 +26621,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000ff0a0         6   unsigned char
     }
 
-SECTION=seg_46
+SECTION=seg_38_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000ff0b0  000ff0bb         c
   _sym_11476
@@ -26645,7 +26645,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000ff0b0         c   unsigned char
     }
 
-SECTION=seg_47
+SECTION=seg_39_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000ff0d0  000ff0d3         4
   _sym_11483
@@ -26665,7 +26665,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000ff0d0         4   unsigned char
     }
 
-SECTION=seg_48
+SECTION=seg_40_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000ff0e0  000ff0e1         2
   _sym_11488
@@ -26685,7 +26685,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000ff0e0         2   unsigned char
     }
 
-SECTION=seg_49
+SECTION=seg_41_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000ff0f0  000ff0f1         2
   _sym_11493
@@ -26705,7 +26705,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000ff0f0         2   unsigned char
     }
 
-SECTION=seg_50
+SECTION=seg_42_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000ff100  000ff10b         c
   _sym_11498
@@ -26733,7 +26733,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000ff100         c   unsigned char
     }
 
-SECTION=seg_51
+SECTION=seg_43_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000ffb40  000ffb45         6
   _sym_11507
@@ -26761,7 +26761,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000ffb40         6   unsigned char
     }
 
-SECTION=seg_52
+SECTION=seg_44_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000ffb50  000ffb5f        10
   _sym_11516
@@ -26809,7 +26809,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000ffb50        10   unsigned char
     }
 
-SECTION=seg_53
+SECTION=seg_45_n
 FILE=DefaultBuild\Temp\module_012.obj
                                   000ffb90  000ffb91         2
   _sym_11535
@@ -26829,7 +26829,7 @@ FILE=DefaultBuild\Temp\module_012.obj
                                   000ffb90         2   unsigned char
     }
 
-SECTION=seg_54
+SECTION=seg_46_n
 FILE=DefaultBuild\Temp\module_045.obj
                                   000ffba0  000ffd23       184
   _sym_11540
@@ -27154,7 +27154,7 @@ FILE=DefaultBuild\Temp\module_045.obj
   _sym_11686
                                   000ffd23         1   data ,l         1
 
-SECTION=seg_55
+SECTION=seg_47_n
 FILE=DefaultBuild\Temp\module_035.obj
                                   000ffda0  000ffde8        49
   _sym_11687
@@ -27250,13 +27250,13 @@ FILE=DefaultBuild\Temp\module_035.obj
   _sym_11732
                                   000ffde8         1   data ,l         1
 
-SECTION=seg_56
+SECTION=seg_48_n
 FILE=DefaultBuild\Temp\module_002.obj
                                   000ffe1c  000ffe1c         1
   _sym_11733
                                   000ffe1c         1   data ,g         b
 
-SECTION=seg_57
+SECTION=seg_49_n
 FILE=DefaultBuild\Temp\module_035.obj
                                   000ffe1e  000ffe1e         1
   _sym_11734
@@ -27294,9 +27294,9 @@ FILE=rlink_generates_04
                                   000283dc         0   none ,g         0
   __e.constf
                                   0002e2ae         0   none ,g         0
-  __sseg_56
+  __sseg_48_n
                                   000ffe1c         0   none ,g         0
-  __eseg_56
+  __eseg_48_n
                                   000ffe1d         0   none ,g         0
   __s.text
                                   00000100         0   none ,g         0
@@ -27306,213 +27306,213 @@ FILE=rlink_generates_04
                                   0005d43c         0   none ,g         0
   __e.data
                                   0005d43d         0   none ,g         0
-  __sseg_11
+  __sseg_03_n
                                   000feba0         0   none ,g         0
-  __eseg_11
+  __eseg_03_n
                                   000febc0         0   none ,g         0
-  __sseg_12
+  __sseg_04_n
                                   000febe0         0   none ,g         0
-  __eseg_12
+  __eseg_04_n
                                   000febe4         0   none ,g         0
-  __sseg_13
+  __sseg_05_n
                                   000febf0         0   none ,g         0
-  __eseg_13
+  __eseg_05_n
                                   000fec00         0   none ,g         0
-  __sseg_14
+  __sseg_06_n
                                   000fec10         0   none ,g         0
-  __eseg_14
+  __eseg_06_n
                                   000fec20         0   none ,g         0
-  __sseg_15
+  __sseg_07_n
                                   000fec30         0   none ,g         0
-  __eseg_15
+  __eseg_07_n
                                   000fec44         0   none ,g         0
-  __sseg_16
+  __sseg_08_n
                                   000fec70         0   none ,g         0
-  __eseg_16
+  __eseg_08_n
                                   000fec8c         0   none ,g         0
-  __sseg_17
+  __sseg_09_n
                                   000fecb0         0   none ,g         0
-  __eseg_17
+  __eseg_09_n
                                   000fecd0         0   none ,g         0
-  __sseg_18
+  __sseg_10_n
                                   000fecf0         0   none ,g         0
-  __eseg_18
+  __eseg_10_n
                                   000fed04         0   none ,g         0
-  __sseg_19
+  __sseg_11_n
                                   000fed30         0   none ,g         0
-  __eseg_19
+  __eseg_11_n
                                   000fed46         0   none ,g         0
-  __sseg_20
+  __sseg_12_n
                                   000fed70         0   none ,g         0
-  __eseg_20
+  __eseg_12_n
                                   000fed76         0   none ,g         0
-  __sseg_21
+  __sseg_13_n
                                   000fed80         0   none ,g         0
-  __eseg_21
+  __eseg_13_n
                                   000fed82         0   none ,g         0
-  __sseg_22
+  __sseg_14_n
                                   000fed90         0   none ,g         0
-  __eseg_22
+  __eseg_14_n
                                   000feda0         0   none ,g         0
-  __sseg_23
+  __sseg_15_n
                                   000fedb0         0   none ,g         0
-  __eseg_23
+  __eseg_15_n
                                   000fedc0         0   none ,g         0
-  __sseg_24
+  __sseg_16_n
                                   000fedd0         0   none ,g         0
-  __eseg_24
+  __eseg_16_n
                                   000fedd8         0   none ,g         0
-  __sseg_25
+  __sseg_17_n
                                   000fede0         0   none ,g         0
-  __eseg_25
+  __eseg_17_n
                                   000fede8         0   none ,g         0
-  __sseg_26
+  __sseg_18_n
                                   000fedf0         0   none ,g         0
-  __eseg_26
+  __eseg_18_n
                                   000fedf8         0   none ,g         0
-  __sseg_27
+  __sseg_19_n
                                   000fee00         0   none ,g         0
-  __eseg_27
+  __eseg_19_n
                                   000fee08         0   none ,g         0
-  __sseg_28
+  __sseg_20_n
                                   000fee10         0   none ,g         0
-  __eseg_28
+  __eseg_20_n
                                   000fee12         0   none ,g         0
-  __sseg_29
+  __sseg_21_n
                                   000fee20         0   none ,g         0
-  __eseg_29
+  __eseg_21_n
                                   000fee40         0   none ,g         0
-  __sseg_30
+  __sseg_22_n
                                   000fee60         0   none ,g         0
-  __eseg_30
+  __eseg_22_n
                                   000fee80         0   none ,g         0
-  __sseg_31
+  __sseg_23_n
                                   000feea0         0   none ,g         0
-  __eseg_31
+  __eseg_23_n
                                   000feea4         0   none ,g         0
-  __sseg_32
+  __sseg_24_n
                                   000feeb0         0   none ,g         0
-  __eseg_32
+  __eseg_24_n
                                   000feeb2         0   none ,g         0
-  __sseg_33
+  __sseg_25_n
                                   000feec0         0   none ,g         0
-  __eseg_33
+  __eseg_25_n
                                   000feec8         0   none ,g         0
-  __sseg_34
+  __sseg_26_n
                                   000feed0         0   none ,g         0
-  __eseg_34
+  __eseg_26_n
                                   000feedc         0   none ,g         0
-  __sseg_35
+  __sseg_27_n
                                   000feef0         0   none ,g         0
-  __eseg_35
+  __eseg_27_n
                                   000fef18         0   none ,g         0
-  __sseg_36
+  __sseg_28_n
                                   000fef50         0   none ,g         0
-  __eseg_36
+  __eseg_28_n
                                   000fef58         0   none ,g         0
-  __sseg_37
+  __sseg_29_n
                                   000fef60         0   none ,g         0
-  __eseg_37
+  __eseg_29_n
                                   000fef64         0   none ,g         0
-  __sseg_38
+  __sseg_30_n
                                   000fef70         0   none ,g         0
-  __eseg_38
+  __eseg_30_n
                                   000fef78         0   none ,g         0
-  __sseg_39
+  __sseg_31_n
                                   000fef80         0   none ,g         0
-  __eseg_39
+  __eseg_31_n
                                   000fef88         0   none ,g         0
-  __sseg_40
+  __sseg_32_n
                                   000fef90         0   none ,g         0
-  __eseg_40
+  __eseg_32_n
                                   000fef96         0   none ,g         0
-  __sseg_41
+  __sseg_33_n
                                   000fefa0         0   none ,g         0
-  __eseg_41
+  __eseg_33_n
                                   000fefa4         0   none ,g         0
-  __sseg_42
+  __sseg_34_n
                                   000fefb0         0   none ,g         0
-  __eseg_42
+  __eseg_34_n
                                   000fefc8         0   none ,g         0
-  __sseg_43
+  __sseg_35_n
                                   000feff0         0   none ,g         0
-  __eseg_43
+  __eseg_35_n
                                   000ff034         0   none ,g         0
-  __sseg_44
+  __sseg_36_n
                                   000ff090         0   none ,g         0
-  __eseg_44
+  __eseg_36_n
                                   000ff098         0   none ,g         0
-  __sseg_45
+  __sseg_37_n
                                   000ff0a0         0   none ,g         0
-  __eseg_45
+  __eseg_37_n
                                   000ff0a6         0   none ,g         0
-  __sseg_46
+  __sseg_38_n
                                   000ff0b0         0   none ,g         0
-  __eseg_46
+  __eseg_38_n
                                   000ff0bc         0   none ,g         0
-  __sseg_47
+  __sseg_39_n
                                   000ff0d0         0   none ,g         0
-  __eseg_47
+  __eseg_39_n
                                   000ff0d4         0   none ,g         0
-  __sseg_48
+  __sseg_40_n
                                   000ff0e0         0   none ,g         0
-  __eseg_48
+  __eseg_40_n
                                   000ff0e2         0   none ,g         0
-  __sseg_49
+  __sseg_41_n
                                   000ff0f0         0   none ,g         0
-  __eseg_49
+  __eseg_41_n
                                   000ff0f2         0   none ,g         0
-  __sseg_50
+  __sseg_42_n
                                   000ff100         0   none ,g         0
-  __eseg_50
+  __eseg_42_n
                                   000ff10c         0   none ,g         0
-  __sseg_51
+  __sseg_43_n
                                   000ffb40         0   none ,g         0
-  __eseg_51
+  __eseg_43_n
                                   000ffb46         0   none ,g         0
-  __sseg_52
+  __sseg_44_n
                                   000ffb50         0   none ,g         0
-  __eseg_52
+  __eseg_44_n
                                   000ffb60         0   none ,g         0
-  __sseg_53
+  __sseg_45_n
                                   000ffb90         0   none ,g         0
-  __eseg_53
+  __eseg_45_n
                                   000ffb92         0   none ,g         0
-  __sseg_01
+  __sdata_a01_f
                                   00001000         0   none ,g         0
-  __eseg_01
+  __edata_a01_f
                                   0000f380         0   none ,g         0
-  __sseg_02
+  __sdata_a02_f
                                   00010000         0   none ,g         0
-  __eseg_02
+  __edata_a02_f
                                   0001cbc0         0   none ,g         0
-  __sseg_03
+  __sdata_a03_f
                                   0001e000         0   none ,g         0
-  __eseg_03
+  __edata_a03_f
                                   0001f068         0   none ,g         0
-  __sseg_04
+  __sdata_a04_f
                                   00020000         0   none ,g         0
-  __eseg_04
+  __edata_a04_f
                                   00027620         0   none ,g         0
-  __sseg_55
+  __sseg_47_n
                                   000ffda0         0   none ,g         0
-  __eseg_55
+  __eseg_47_n
                                   000ffde9         0   none ,g         0
-  __sseg_57
+  __sseg_49_n
                                   000ffe1e         0   none ,g         0
-  __eseg_57
+  __eseg_49_n
                                   000ffe1f         0   none ,g         0
-  __sseg_54
+  __sseg_46_n
                                   000ffba0         0   none ,g         0
-  __eseg_54
+  __eseg_46_n
                                   000ffd24         0   none ,g         0
-  __sseg_08
+  __sseg_01_n
                                   000f7f00         0   none ,g         0
-  __eseg_08
+  __eseg_01_n
                                   000f7f01         0   none ,g         0
-  __sseg_10
+  __sseg_02_n
                                   000fe3a0         0   none ,g         0
-  __eseg_10
+  __eseg_02_n
                                   000fe3a1         0   none ,g         0
   __s.const
                                   00003000         0   none ,g         0
@@ -27546,21 +27546,21 @@ FILE=rlink_generates_04
                                   000283dc         0   none ,g         0
   __e.SLIB
                                   000283dc         0   none ,g         0
-  __sseg_06
+  __sRFD_CMN_f
                                   0005d443         0   none ,g         0
-  __eseg_06
+  __eRFD_CMN_f
                                   0005d5a4         0   none ,g         0
-  __sseg_05
+  __sRFD_DATA_n
                                   0005d43e         0   none ,g         0
-  __eseg_05
+  __eRFD_DATA_n
                                   0005d443         0   none ,g         0
-  __sseg_09
+  __sRFD_data_b05
                                   000fb03c         0   none ,g         0
-  __eseg_09
+  __eRFD_data_b05
                                   000fb041         0   none ,g         0
-  __sseg_07
+  __sRFD_DF_f
                                   0005d5a4         0   none ,g         0
-  __eseg_07
+  __eRFD_DF_f
                                   0005d5ec         0   none ,g         0
   __s.option_byte
                                   000000c0         0   none ,g         0
@@ -38853,7 +38853,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                  _sym_09748
                                  000f992e 0008(00031c62:.textf)
                                           0016(0003c7d3:.textf)
-     SECTION=seg_56
+     SECTION=seg_48_n
                  _sym_11733
                                  000ffe1c 0012(000360eb:.textf)
                                           0012(00036109:.textf)
@@ -39424,7 +39424,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                  00036828 0049(0005aa7a:.textf)
                  _sym_03857
                                  0003695d 0049(0005aaba:.textf)
-     SECTION=seg_11
+     SECTION=seg_03_n
                  _sym_11063
                                  000feba0 0012(00034fc7:.textf)
                                           0012(00034fcb:.textf)
@@ -39509,7 +39509,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005bfc2:.textf)
                                           0050(0002e0be:.constf)
                                           0050(0002e0c0:.constf)
-     SECTION=seg_12
+     SECTION=seg_04_n
                  _sym_11082
                                  000febe0 0012(000350e8:.textf)
                                           0012(000350ef:.textf)
@@ -39522,7 +39522,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005b5c7:.textf)
                                           0050(0002e0c8:.constf)
                                           0050(0002e0ca:.constf)
-     SECTION=seg_13
+     SECTION=seg_05_n
                  _sym_11087
                                  000febf0 0012(0003510c:.textf)
                                           0012(00035111:.textf)
@@ -39551,13 +39551,13 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0012(00036311:.textf)
                                           0012(00036314:.textf)
                                           0012(0002a370:.constf)
-     SECTION=seg_14
+     SECTION=seg_06_n
                  _sym_11098
                                  000fec10 0012(0002a380:.constf)
-     SECTION=seg_15
+     SECTION=seg_07_n
                  _sym_11102
                                  000fec30 0012(0002a390:.constf)
-     SECTION=seg_16
+     SECTION=seg_08_n
                  _sym_11106
                                  000fec70 0012(0002a3a0:.constf)
                                           0018(0004526f:.textf)
@@ -39604,7 +39604,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005b63e:.textf)
                                           0050(0002e0d2:.constf)
                                           0050(0002e0d4:.constf)
-     SECTION=seg_17
+     SECTION=seg_09_n
                  _sym_11123
                                  000fecb0 0012(00035268:.textf)
                                           0012(00035279:.textf)
@@ -39752,7 +39752,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005b781:.textf)
                                           0050(0002e0dc:.constf)
                                           0050(0002e0de:.constf)
-     SECTION=seg_18
+     SECTION=seg_10_n
                  _sym_11158
                                  000fecf0 0012(0003458c:.textf)
                                           0012(0003458f:.textf)
@@ -39798,7 +39798,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0045(000596c6:.textf)
                                           0050(0002e0e6:.constf)
                                           0050(0002e0e8:.constf)
-     SECTION=seg_19
+     SECTION=seg_11_n
                  _sym_11163
                                  000fed30 0012(0002a3d0:.constf)
                                           0013(000374fe:.textf)
@@ -39850,7 +39850,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0045(00059a52:.textf)
                                           0050(0002e0f0:.constf)
                                           0050(0002e0f2:.constf)
-     SECTION=seg_20
+     SECTION=seg_12_n
                  _sym_11178
                                  000fed70 0008(00032339:.textf)
                                           0012(0002a3e0:.constf)
@@ -39863,7 +39863,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0045(00059708:.textf)
                                           0050(0002e0fa:.constf)
                                           0050(0002e0fc:.constf)
-     SECTION=seg_21
+     SECTION=seg_13_n
                  _sym_11182
                                  000fed80 0012(0002a3f0:.constf)
                                           0050(0005b78a:.textf)
@@ -39872,7 +39872,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005b7a2:.textf)
                                           0050(0002e104:.constf)
                                           0050(0002e106:.constf)
-     SECTION=seg_22
+     SECTION=seg_14_n
                  _sym_11187
                                  000fed90 0012(00035575:.textf)
                                           0012(00035578:.textf)
@@ -39941,7 +39941,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005bfff:.textf)
                                           0050(0002e10e:.constf)
                                           0050(0002e110:.constf)
-     SECTION=seg_23
+     SECTION=seg_15_n
                  _sym_11206
                                  000fedb0 0012(0003566b:.textf)
                                           0012(0003566e:.textf)
@@ -40010,7 +40010,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005c03d:.textf)
                                           0050(0002e118:.constf)
                                           0050(0002e11a:.constf)
-     SECTION=seg_24
+     SECTION=seg_16_n
                  _sym_11225
                                  000fedd0 0012(00035755:.textf)
                                           0012(00035758:.textf)
@@ -40045,7 +40045,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005b871:.textf)
                                           0050(0002e122:.constf)
                                           0050(0002e124:.constf)
-     SECTION=seg_25
+     SECTION=seg_17_n
                  _sym_11236
                                  000fede0 0012(000357d3:.textf)
                                           0012(000357d6:.textf)
@@ -40080,7 +40080,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005b8ba:.textf)
                                           0050(0002e12c:.constf)
                                           0050(0002e12e:.constf)
-     SECTION=seg_26
+     SECTION=seg_18_n
                  _sym_11247
                                  000fedf0 0012(00035851:.textf)
                                           0012(00035854:.textf)
@@ -40115,7 +40115,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005b903:.textf)
                                           0050(0002e136:.constf)
                                           0050(0002e138:.constf)
-     SECTION=seg_27
+     SECTION=seg_19_n
                  _sym_11258
                                  000fee00 0012(000358cf:.textf)
                                           0012(000358d2:.textf)
@@ -40150,14 +40150,14 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005b94c:.textf)
                                           0050(0002e140:.constf)
                                           0050(0002e142:.constf)
-     SECTION=seg_28
+     SECTION=seg_20_n
                  _sym_11269
                                  000fee10 0012(000345cb:.textf)
                                           0012(0002a460:.constf)
                                           0013(000379f4:.textf)
                                           0029(00049979:.textf)
                                           0029(00049983:.textf)
-     SECTION=seg_29
+     SECTION=seg_21_n
                  _sym_11273
                                  000fee20 0012(00035946:.textf)
                                           0012(0003594c:.textf)
@@ -40274,7 +40274,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005c0b8:.textf)
                                           0050(0002e14a:.constf)
                                           0050(0002e14c:.constf)
-     SECTION=seg_30
+     SECTION=seg_22_n
                  _sym_11308
                                  000fee60 0012(00035a99:.textf)
                                           0012(00035aa1:.textf)
@@ -40359,7 +40359,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0051(0005c829:.textf)
                                           0051(0005c82f:.textf)
                                           0051(0005c832:.textf)
-     SECTION=seg_31
+     SECTION=seg_23_n
                  _sym_11319
                                  000feea0 0012(00035b68:.textf)
                                           0012(00035b6f:.textf)
@@ -40373,7 +40373,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005bba3:.textf)
                                           0050(0002e15e:.constf)
                                           0050(0002e160:.constf)
-     SECTION=seg_32
+     SECTION=seg_24_n
                  _sym_11324
                                  000feeb0 0012(0002a4a0:.constf)
                                           0013(00037874:.textf)
@@ -40386,7 +40386,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005bbbf:.textf)
                                           0050(0002e168:.constf)
                                           0050(0002e16a:.constf)
-     SECTION=seg_33
+     SECTION=seg_25_n
                  _sym_11329
                                  000feec0 0012(00035b97:.textf)
                                           0012(00035b9e:.textf)
@@ -40407,7 +40407,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005bbf4:.textf)
                                           0050(0002e172:.constf)
                                           0050(0002e174:.constf)
-     SECTION=seg_34
+     SECTION=seg_26_n
                  _sym_11336
                                  000feed0 0012(0002a4c0:.constf)
                                           0012(0002a710:.constf)
@@ -40442,16 +40442,16 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0043(00058307:.textf)
                                           0050(0002e17c:.constf)
                                           0050(0002e17e:.constf)
-     SECTION=seg_35
+     SECTION=seg_27_n
                  _sym_11351
                                  000feef0 0012(0002a4d0:.constf)
-     SECTION=seg_36
+     SECTION=seg_28_n
                  _sym_11355
                                  000fef50 0012(0002a4e0:.constf)
-     SECTION=seg_37
+     SECTION=seg_29_n
                  _sym_11359
                                  000fef60 0012(0002a4f0:.constf)
-     SECTION=seg_38
+     SECTION=seg_30_n
                  _sym_11363
                                  000fef70 0012(0002a500:.constf)
                                           0018(00045344:.textf)
@@ -40468,7 +40468,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005bc24:.textf)
                                           0050(0002e186:.constf)
                                           0050(0002e188:.constf)
-     SECTION=seg_39
+     SECTION=seg_31_n
                  _sym_11370
                                  000fef80 0012(00035c0b:.textf)
                                           0012(00035c28:.textf)
@@ -40537,7 +40537,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005bda5:.textf)
                                           0050(0002e190:.constf)
                                           0050(0002e192:.constf)
-     SECTION=seg_40
+     SECTION=seg_32_n
                  _sym_11389
                                  000fef90 0012(00035d0a:.textf)
                                           0012(00035d27:.textf)
@@ -40582,7 +40582,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005be96:.textf)
                                           0050(0002e19a:.constf)
                                           0050(0002e19c:.constf)
-     SECTION=seg_41
+     SECTION=seg_33_n
                  _sym_11404
                                  000fefa0 0012(00035da4:.textf)
                                           0012(00035dab:.textf)
@@ -40593,7 +40593,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005beb9:.textf)
                                           0050(0002e1a4:.constf)
                                           0050(0002e1a6:.constf)
-     SECTION=seg_42
+     SECTION=seg_34_n
                  _sym_11409
                                  000fefb0 0008(000323bf:.textf)
                                           0008(000323e7:.textf)
@@ -40634,7 +40634,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0045(000597d2:.textf)
                                           0050(0002e1ae:.constf)
                                           0050(0002e1b0:.constf)
-     SECTION=seg_43
+     SECTION=seg_35_n
                  _sym_11424
                                  000feff0 0012(00035e15:.textf)
                                           0012(00035e1b:.textf)
@@ -40739,7 +40739,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0045(0005982c:.textf)
                                           0045(00059832:.textf)
                                           0045(00059838:.textf)
-     SECTION=seg_44
+     SECTION=seg_36_n
                  _sym_11461
                                  000ff090 0012(00035efd:.textf)
                                           0012(00035f00:.textf)
@@ -40774,7 +40774,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005bf03:.textf)
                                           0050(0002e1b8:.constf)
                                           0050(0002e1ba:.constf)
-     SECTION=seg_45
+     SECTION=seg_37_n
                  _sym_11472
                                  000ff0a0 0008(00032374:.textf)
                                           0012(0002a570:.constf)
@@ -40787,7 +40787,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0045(0005985c:.textf)
                                           0050(0002e1c2:.constf)
                                           0050(0002e1c4:.constf)
-     SECTION=seg_46
+     SECTION=seg_38_n
                  _sym_11476
                                  000ff0b0 0012(0002a580:.constf)
                                           0018(00045304:.textf)
@@ -40810,14 +40810,14 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005bf3f:.textf)
                                           0050(0002e1cc:.constf)
                                           0050(0002e1ce:.constf)
-     SECTION=seg_47
+     SECTION=seg_39_n
                  _sym_11483
                                  000ff0d0 0012(00035f7d:.textf)
                                           0012(00035f84:.textf)
                                           0012(0002a590:.constf)
                                           0018(0004542c:.textf)
                                           0018(00045433:.textf)
-     SECTION=seg_48
+     SECTION=seg_40_n
                  _sym_11488
                                  000ff0e0 0008(0003245d:.textf)
                                           0012(0002a5a0:.constf)
@@ -40825,7 +40825,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0045(000598b9:.textf)
                                           0050(0002e1d6:.constf)
                                           0050(0002e1d8:.constf)
-     SECTION=seg_49
+     SECTION=seg_41_n
                  _sym_11493
                                  000ff0f0 0012(0002a5b0:.constf)
                                           0013(00038379:.textf)
@@ -40841,7 +40841,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0045(000598cb:.textf)
                                           0050(0002e1e0:.constf)
                                           0050(0002e1e2:.constf)
-     SECTION=seg_50
+     SECTION=seg_42_n
                  _sym_11498
                                  000ff100 0009(00032ee5:.textf)
                                           0009(00032eec:.textf)
@@ -40876,7 +40876,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0050(0005bf83:.textf)
                                           0050(0002e1ea:.constf)
                                           0050(0002e1ec:.constf)
-     SECTION=seg_51
+     SECTION=seg_43_n
                  _sym_11507
                                  000ffb40 0012(0003605a:.textf)
                                           0012(00036060:.textf)
@@ -40903,7 +40903,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0013(0003826e:.textf)
                                           0013(00038272:.textf)
                                           0013(00038276:.textf)
-     SECTION=seg_52
+     SECTION=seg_44_n
                  _sym_11516
                                  000ffb50 0012(000360bc:.textf)
                                           0012(000360c1:.textf)
@@ -40952,7 +40952,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0012(00036352:.textf)
                                           0012(00036356:.textf)
                                           0012(0002a5f0:.constf)
-     SECTION=seg_53
+     SECTION=seg_45_n
                  _sym_11535
                                  000ffb90 0012(0002a600:.constf)
      SECTION=.constf
@@ -42092,7 +42092,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0019(0004771c:.textf)
      SECTION=.constf
 0020 module_020
-     SECTION=seg_01
+     SECTION=data_a01_f
                  _sym_00015
                                  00001000 0006(0003057f:.textf)
                                           0006(00030582:.textf)
@@ -42615,7 +42615,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                  _sym_00115
                                  0000f100 0015(0003a584:.textf)
                                           0015(0003a58c:.textf)
-     SECTION=seg_02
+     SECTION=data_a02_f
                  _sym_00116
                                  00010000 0015(0003be4a:.textf)
                                           0015(0003be4e:.textf)
@@ -43086,7 +43086,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                  000489d0 0049(0005aa4b:.textf)
      SECTION=.bss
 0024 module_024
-     SECTION=seg_03
+     SECTION=data_a03_f
                  _sym_00209
                                  0001e000 0047(00059ceb:.textf)
                                           0047(00059cee:.textf)
@@ -43468,7 +43468,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                  0001f054 0004(0002ea87:.textf)
                                           0004(0002ea8d:.textf)
 0025 module_025
-     SECTION=seg_04
+     SECTION=data_a04_f
                  _sym_00325
                                  00020000 0030(0004dc17:.textf)
                                           0030(0004dc1d:.textf)
@@ -44313,8 +44313,8 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0028(00049250:.textf)
                                           0028(000492ed:.textf)
                                           0028(00049418:.textf)
-     SECTION=seg_55
-     SECTION=seg_57
+     SECTION=seg_47_n
+     SECTION=seg_49_n
 0036 module_036
      SECTION=.text
                  _sym_00008
@@ -44917,7 +44917,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                  00059a65 0028(0004941c:.textf)
                  _sym_06542
                                  00059aae 0016(0003c569:.textf)
-     SECTION=seg_54
+     SECTION=seg_46_n
 0046 module_046
      SECTION=.text
                  _sym_00011
@@ -45035,8 +45035,8 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                           0028(000492fd:.textf)
                                           0028(0004940c:.textf)
      SECTION=.bss
-     SECTION=seg_08
-     SECTION=seg_10
+     SECTION=seg_01_n
+     SECTION=seg_02_n
 0054 module_054
      SECTION=.textf
                  _sym_06822
@@ -45106,19 +45106,19 @@ No   Unit Name   Global.Symbol   Location External Infomation
                  _sym_06867
                                  0005d3f8 0059(00000898:.text)
 0062 module_062
-     SECTION=seg_06
+     SECTION=RFD_CMN_f
                  _sym_06868
-                                 0005d443 0064(0005d47d:seg_06)
-                                          0064(0005d4a7:seg_06)
-                                          0064(0005d4e6:seg_06)
+                                 0005d443 0064(0005d47d:RFD_CMN_f)
+                                          0064(0005d4a7:RFD_CMN_f)
+                                          0064(0005d4e6:RFD_CMN_f)
                  _sym_06869
-                                 0005d44c 0064(0005d49d:seg_06)
-                                          0064(0005d4bd:seg_06)
-                                          0064(0005d4f9:seg_06)
-     SECTION=seg_05
-     SECTION=seg_09
+                                 0005d44c 0064(0005d49d:RFD_CMN_f)
+                                          0064(0005d4bd:RFD_CMN_f)
+                                          0064(0005d4f9:RFD_CMN_f)
+     SECTION=RFD_DATA_n
+     SECTION=RFD_data_b05
 0063 module_063
-     SECTION=seg_07
+     SECTION=RFD_DF_f
                  _sym_06885
                                  0005d5a4 0016(0003c9af:.textf)
                  _sym_06886
@@ -45126,7 +45126,7 @@ No   Unit Name   Global.Symbol   Location External Infomation
                  _sym_06887
                                  0005d5d2 0016(0003c940:.textf)
 0064 module_064
-     SECTION=seg_06
+     SECTION=RFD_CMN_f
                  _sym_06870
                                  0005d457 0016(0003c899:.textf)
                  _sym_06871
@@ -45144,25 +45144,25 @@ No   Unit Name   Global.Symbol   Location External Infomation
                  _sym_06875
                                  0005d531 0016(0003c878:.textf)
                                           0016(0003cd52:.textf)
-                                          0064(0005d512:seg_06)
+                                          0064(0005d512:RFD_CMN_f)
                  _sym_06876
                                  0005d54f
-     SECTION=seg_09
+     SECTION=RFD_data_b05
                  _sym_11057
-                                 000fb03e 0064(0005d45a:seg_06)
-                                          0064(0005d4a0:seg_06)
-                                          0064(0005d4c0:seg_06)
-                                          0064(0005d4d8:seg_06)
+                                 000fb03e 0064(0005d45a:RFD_CMN_f)
+                                          0064(0005d4a0:RFD_CMN_f)
+                                          0064(0005d4c0:RFD_CMN_f)
+                                          0064(0005d4d8:RFD_CMN_f)
                  _sym_11058
-                                 000fb03f 0064(0005d463:seg_06)
-                                          0064(0005d4ff:seg_06)
-                                          0064(0005d551:seg_06)
+                                 000fb03f 0064(0005d463:RFD_CMN_f)
+                                          0064(0005d4ff:RFD_CMN_f)
+                                          0064(0005d551:RFD_CMN_f)
                  _sym_11059
-                                 000fb040 0064(0005d466:seg_06)
-                                          0064(0005d528:seg_06)
-     SECTION=seg_05
+                                 000fb040 0064(0005d466:RFD_CMN_f)
+                                          0064(0005d528:RFD_CMN_f)
+     SECTION=RFD_DATA_n
 0065 module_065
-     SECTION=seg_06
+     SECTION=RFD_CMN_f
                  _sym_06877
                                  0005d562 0016(0003cd80:.textf)
                  _sym_06878
@@ -45425,25 +45425,25 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                  00000100
                  __e.text
                                  000008f3
-                 __sseg_01
+                 __sdata_a01_f
                                  00001000
                  __s.const
                                  00003000
                  __e.const
                                  00003000
-                 __eseg_01
+                 __edata_a01_f
                                  0000f380
-                 __sseg_02
+                 __sdata_a02_f
                                  00010000
-                 __eseg_02
+                 __edata_a02_f
                                  0001cbc0
-                 __sseg_03
+                 __sdata_a03_f
                                  0001e000
-                 __eseg_03
+                 __edata_a03_f
                                  0001f068
-                 __sseg_04
+                 __sdata_a04_f
                                  00020000
-                 __eseg_04
+                 __edata_a04_f
                                  00027620
                  __s.RLIB
                                  00028000
@@ -45469,23 +45469,23 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                  0005d43e
                  __e.sdata
                                  0005d43e
-                 __sseg_05
+                 __sRFD_DATA_n
                                  0005d43e
-                 __sseg_06
+                 __sRFD_CMN_f
                                  0005d443
-                 __eseg_05
+                 __eRFD_DATA_n
                                  0005d443
-                 __eseg_06
+                 __eRFD_CMN_f
                                  0005d5a4
-                 __sseg_07
+                 __sRFD_DF_f
                                  0005d5a4
-                 __eseg_07
+                 __eRFD_DF_f
                                  0005d5ec
-                 __sseg_08
+                 __sseg_01_n
                                  000f7f00
                  __RAM_ADDR_START
                                  000f7f00
-                 __eseg_08
+                 __eseg_01_n
                                  000f7f01
                  __s.dataR
                                  000f7f02
@@ -45495,209 +45495,209 @@ No   Unit Name   Global.Symbol   Location External Infomation
                                  000f7f04
                  __e.bss
                                  000fb03c
-                 __sseg_09
+                 __sRFD_data_b05
                                  000fb03c
-                 __eseg_09
+                 __eRFD_data_b05
                                  000fb041
                  __STACK_ADDR_END
                                  000fb042
-                 __sseg_10
+                 __sseg_02_n
                                  000fe3a0
                  __s.stack_bss
                                  000fe3a0
                  __STACK_ADDR_START
                                  000fe3a0
-                 __eseg_10
+                 __eseg_02_n
                                  000fe3a1
                  __e.stack_bss
                                  000fe7a0
-                 __sseg_11
+                 __sseg_03_n
                                  000feba0
-                 __eseg_11
+                 __eseg_03_n
                                  000febc0
-                 __sseg_12
+                 __sseg_04_n
                                  000febe0
-                 __eseg_12
+                 __eseg_04_n
                                  000febe4
-                 __sseg_13
+                 __sseg_05_n
                                  000febf0
-                 __eseg_13
+                 __eseg_05_n
                                  000fec00
-                 __sseg_14
+                 __sseg_06_n
                                  000fec10
-                 __eseg_14
+                 __eseg_06_n
                                  000fec20
-                 __sseg_15
+                 __sseg_07_n
                                  000fec30
-                 __eseg_15
+                 __eseg_07_n
                                  000fec44
-                 __sseg_16
+                 __sseg_08_n
                                  000fec70
-                 __eseg_16
+                 __eseg_08_n
                                  000fec8c
-                 __sseg_17
+                 __sseg_09_n
                                  000fecb0
-                 __eseg_17
+                 __eseg_09_n
                                  000fecd0
-                 __sseg_18
+                 __sseg_10_n
                                  000fecf0
-                 __eseg_18
+                 __eseg_10_n
                                  000fed04
-                 __sseg_19
+                 __sseg_11_n
                                  000fed30
-                 __eseg_19
+                 __eseg_11_n
                                  000fed46
-                 __sseg_20
+                 __sseg_12_n
                                  000fed70
-                 __eseg_20
+                 __eseg_12_n
                                  000fed76
-                 __sseg_21
+                 __sseg_13_n
                                  000fed80
-                 __eseg_21
+                 __eseg_13_n
                                  000fed82
-                 __sseg_22
+                 __sseg_14_n
                                  000fed90
-                 __eseg_22
+                 __eseg_14_n
                                  000feda0
-                 __sseg_23
+                 __sseg_15_n
                                  000fedb0
-                 __eseg_23
+                 __eseg_15_n
                                  000fedc0
-                 __sseg_24
+                 __sseg_16_n
                                  000fedd0
-                 __eseg_24
+                 __eseg_16_n
                                  000fedd8
-                 __sseg_25
+                 __sseg_17_n
                                  000fede0
-                 __eseg_25
+                 __eseg_17_n
                                  000fede8
-                 __sseg_26
+                 __sseg_18_n
                                  000fedf0
-                 __eseg_26
+                 __eseg_18_n
                                  000fedf8
-                 __sseg_27
+                 __sseg_19_n
                                  000fee00
-                 __eseg_27
+                 __eseg_19_n
                                  000fee08
-                 __sseg_28
+                 __sseg_20_n
                                  000fee10
-                 __eseg_28
+                 __eseg_20_n
                                  000fee12
-                 __sseg_29
+                 __sseg_21_n
                                  000fee20
-                 __eseg_29
+                 __eseg_21_n
                                  000fee40
-                 __sseg_30
+                 __sseg_22_n
                                  000fee60
-                 __eseg_30
+                 __eseg_22_n
                                  000fee80
-                 __sseg_31
+                 __sseg_23_n
                                  000feea0
-                 __eseg_31
+                 __eseg_23_n
                                  000feea4
-                 __sseg_32
+                 __sseg_24_n
                                  000feeb0
-                 __eseg_32
+                 __eseg_24_n
                                  000feeb2
-                 __sseg_33
+                 __sseg_25_n
                                  000feec0
-                 __eseg_33
+                 __eseg_25_n
                                  000feec8
-                 __sseg_34
+                 __sseg_26_n
                                  000feed0
-                 __eseg_34
+                 __eseg_26_n
                                  000feedc
-                 __sseg_35
+                 __sseg_27_n
                                  000feef0
-                 __eseg_35
+                 __eseg_27_n
                                  000fef18
-                 __sseg_36
+                 __sseg_28_n
                                  000fef50
-                 __eseg_36
+                 __eseg_28_n
                                  000fef58
-                 __sseg_37
+                 __sseg_29_n
                                  000fef60
-                 __eseg_37
+                 __eseg_29_n
                                  000fef64
-                 __sseg_38
+                 __sseg_30_n
                                  000fef70
-                 __eseg_38
+                 __eseg_30_n
                                  000fef78
-                 __sseg_39
+                 __sseg_31_n
                                  000fef80
-                 __eseg_39
+                 __eseg_31_n
                                  000fef88
-                 __sseg_40
+                 __sseg_32_n
                                  000fef90
-                 __eseg_40
+                 __eseg_32_n
                                  000fef96
-                 __sseg_41
+                 __sseg_33_n
                                  000fefa0
-                 __eseg_41
+                 __eseg_33_n
                                  000fefa4
-                 __sseg_42
+                 __sseg_34_n
                                  000fefb0
-                 __eseg_42
+                 __eseg_34_n
                                  000fefc8
-                 __sseg_43
+                 __sseg_35_n
                                  000feff0
-                 __eseg_43
+                 __eseg_35_n
                                  000ff034
-                 __sseg_44
+                 __sseg_36_n
                                  000ff090
-                 __eseg_44
+                 __eseg_36_n
                                  000ff098
-                 __sseg_45
+                 __sseg_37_n
                                  000ff0a0
-                 __eseg_45
+                 __eseg_37_n
                                  000ff0a6
-                 __sseg_46
+                 __sseg_38_n
                                  000ff0b0
-                 __eseg_46
+                 __eseg_38_n
                                  000ff0bc
-                 __sseg_47
+                 __sseg_39_n
                                  000ff0d0
-                 __eseg_47
+                 __eseg_39_n
                                  000ff0d4
-                 __sseg_48
+                 __sseg_40_n
                                  000ff0e0
-                 __eseg_48
+                 __eseg_40_n
                                  000ff0e2
-                 __sseg_49
+                 __sseg_41_n
                                  000ff0f0
-                 __eseg_49
+                 __eseg_41_n
                                  000ff0f2
-                 __sseg_50
+                 __sseg_42_n
                                  000ff100
-                 __eseg_50
+                 __eseg_42_n
                                  000ff10c
-                 __sseg_51
+                 __sseg_43_n
                                  000ffb40
-                 __eseg_51
+                 __eseg_43_n
                                  000ffb46
-                 __sseg_52
+                 __sseg_44_n
                                  000ffb50
-                 __eseg_52
+                 __eseg_44_n
                                  000ffb60
-                 __sseg_53
+                 __sseg_45_n
                                  000ffb90
-                 __eseg_53
+                 __eseg_45_n
                                  000ffb92
-                 __sseg_54
+                 __sseg_46_n
                                  000ffba0
-                 __eseg_54
+                 __eseg_46_n
                                  000ffd24
-                 __sseg_55
+                 __sseg_47_n
                                  000ffda0
-                 __eseg_55
+                 __eseg_47_n
                                  000ffde9
-                 __sseg_56
+                 __sseg_48_n
                                  000ffe1c
-                 __eseg_56
+                 __eseg_48_n
                                  000ffe1d
-                 __sseg_57
+                 __sseg_49_n
                                  000ffe1e
-                 __eseg_57
+                 __eseg_49_n
                                  000ffe1f
                  __s.sbss
                                  000ffe20

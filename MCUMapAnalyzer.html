@@ -3273,6 +3273,60 @@ const I18N = {
     'device.romEstimated':     { ja: '(推定)', en: '(estimated)' },
     'device.romNone':          { ja: 'なし',   en: 'None' },
     'device.romCap.notFound':  { ja: '-', en: '-' },
+    'device.label.device':     { ja: 'デバイス',   en: 'Device' },
+    'device.label.series':     { ja: 'シリーズ',   en: 'Series' },
+    'device.label.compiler':   { ja: 'コンパイラ', en: 'Compiler' },
+    'device.label.mirror':     { ja: 'ミラー',     en: 'Mirror' },
+    'device.label.file':       { ja: 'ファイル',   en: 'File' },
+
+    // KPI ラベル
+    'kpi.romCapacity':         { ja: 'ROM容量',   en: 'ROM Capacity' },
+    'kpi.used':                { ja: '使用量',    en: 'Used' },
+    'kpi.usageRate':           { ja: '使用率',    en: 'Usage' },
+    'kpi.remaining':           { ja: '残量',      en: 'Remaining' },
+
+    // ミラーカード
+    'mirror.title':            { ja: 'ミラー領域情報', en: 'Mirror Area' },
+    'mirror.cardSubtitle':     { ja: '{series} {kb}KB品のハードウェアミラー領域', en: 'HW mirror area for {series} {kb}KB' },
+    'mirror.available':        { ja: 'ミラー機能あり', en: 'Mirror Available' },
+    'mirror.none':             { ja: 'ミラー機能なし', en: 'No Mirror' },
+    'mirror.label.area':       { ja: '領域',     en: 'Area' },
+    'mirror.label.size':       { ja: 'サイズ',   en: 'Size' },
+    'mirror.label.dfMirror':   { ja: 'DFミラー', en: 'DF Mirror' },
+    'mirror.label.source':     { ja: 'ミラー元', en: 'Source' },
+    'mirror.label.desc':       { ja: '説明',     en: 'Description' },
+    'mirror.noneDesc':         { ja: 'このデバイスはハードウェアミラー機能を持ちません。F領域(0xF0000-0xFFFFF)へのセクション配置は集計対象外となります。',
+                                   en: 'This device has no hardware mirror. Sections placed in F-area (0xF0000-0xFFFFF) are excluded from aggregation.' },
+    'mirror.note':             { ja: '※ ミラー領域はROM容量とは独立した存在で、ROM使用率には含まれません。',
+                                   en: '* The mirror area is independent of ROM capacity and is not included in the ROM usage rate.' },
+
+    // ドーナツ / 凡例
+    'donut.empty':             { ja: 'データなし', en: 'No data' },
+    'memmap.legend.free':      { ja: '空き領域', en: 'Free area' },
+
+    // 整合性パネル(比較関連)
+    'integrity.cannotCompare': { ja: '⚠ 比較不可',     en: '⚠ Cannot compare' },
+    'integrity.compareDone':   { ja: '比較完了',       en: 'Compare done' },
+    'integrity.diffSummary':   { ja: '差分: {sign}{n} B ({pct})', en: 'Diff: {sign}{n} B ({pct})' },
+
+    // 比較画面 (空状態)
+    'compare.empty.title':     { ja: '比較する2つのmapファイルを投入してください', en: 'Please load two map files to compare' },
+    'compare.empty.base':      { ja: 'ベース',     en: 'Base' },
+    'compare.empty.target':    { ja: '比較先',     en: 'Target' },
+
+    // 比較画面 (カード)
+    'compare.byCat.title':     { ja: 'カテゴリ別差分', en: 'Diff by Category' },
+    'compare.byCat.subtitle':  { ja: '5カテゴリそれぞれの増減', en: 'Increase/decrease for each of 5 categories' },
+
+    // 比較タブ有効化トースト
+    'toast.compareReady.text':   { ja: '比較タブが有効になりました', en: 'Compare tab is now enabled' },
+    'toast.compareReady.action': { ja: 'クリックで開く',          en: 'Click to open' },
+
+    // スロット (再投入/クリア/ファイル数)
+    'slot.reload':             { ja: '📁 別のファイル',  en: '📁 Choose another' },
+    'slot.clear':              { ja: 'クリア',          en: 'Clear' },
+    'slot.fileCount':          { ja: '{n} ファイル',    en: '{n} files' },
+    'slot.select':             { ja: '📁 ファイルを選択', en: '📁 Choose File' },
 
     // CSVエクスポートボタン
     'compare.csvBtnTip':       { ja: '差分をCSVで出力（フィルタ反映）', en: 'Export diff as CSV (filter applied)' },
@@ -5680,10 +5734,10 @@ const Views = {
             <span class="input-slot-filename" title="${Util.escapeHtml(result.fileName)}">${Util.escapeHtml(result.fileName)}</span>
             <button type="button" class="input-slot-copybtn" data-copy="${Util.escapeHtml(result.fileName)}" title="${Util.escapeAttr(I18N.t('slot.copyFileName'))}">📋</button>
           </div>
-          <div class="input-slot-stats">${Util.fmtCompiler(result.compiler)} · ${Util.escapeHtml(result.deviceName || '-')} · ${agg.fileCats.length}ファイル</div>
+          <div class="input-slot-stats">${Util.fmtCompiler(result.compiler)} · ${Util.escapeHtml(result.deviceName || '-')} · ${Util.escapeHtml(I18N.t('slot.fileCount', {n: agg.fileCats.length}))}</div>
           <div class="input-slot-actions">
-            <button type="button" class="input-slot-btn" data-action="reload" data-slot="${slot}">📁 別のファイル</button>
-            <button type="button" class="input-slot-btn --danger" data-action="clear" data-slot="${slot}">クリア</button>
+            <button type="button" class="input-slot-btn" data-action="reload" data-slot="${slot}">${Util.escapeHtml(I18N.t('slot.reload'))}</button>
+            <button type="button" class="input-slot-btn --danger" data-action="clear" data-slot="${slot}">${Util.escapeHtml(I18N.t('slot.clear'))}</button>
           </div>
         `;
         // コピーボタン
@@ -5724,7 +5778,7 @@ const Views = {
         contentEl.innerHTML = `
           <div class="input-slot-empty">${emptyMsg}</div>
           <div class="input-slot-actions">
-            <button type="button" class="input-slot-btn --primary" data-action="select" data-slot="${slot}">📁 ファイルを選択</button>
+            <button type="button" class="input-slot-btn --primary" data-action="select" data-slot="${slot}">${Util.escapeHtml(I18N.t('slot.select'))}</button>
           </div>
         `;
         contentEl.querySelector('[data-action="select"]').addEventListener('click', (e) => {
@@ -5761,7 +5815,7 @@ const Views = {
         if (!cmp.precheck.canCompare) {
           panel.className = 'integrity-panel --warn';
           panel.innerHTML = `
-            <div class="integrity-status">⚠ 比較不可</div>
+            <div class="integrity-status">${Util.escapeHtml(I18N.t('integrity.cannotCompare'))}</div>
             <div class="integrity-detail">${Util.escapeHtml(cmp.precheck.warnings[0] || '')}</div>
           `;
         } else {
@@ -5770,9 +5824,10 @@ const Views = {
           const hasWarn = cmp.precheck.warnings.length > 0;
           const status = hasWarn ? '--warn' : '--ok';
           panel.className = `integrity-panel ${status}`;
+          const pctStr = cmp.summary.diffPct === null ? '-' : sign + cmp.summary.diffPct.toFixed(2) + '%';
           panel.innerHTML = `
-            <div class="integrity-status">${hasWarn ? '⚠' : '✓'} 比較完了</div>
-            <div class="integrity-detail">差分: ${sign}${Util.fmtNumber(cmp.summary.diff)} B (${cmp.summary.diffPct === null ? '-' : sign + cmp.summary.diffPct.toFixed(2) + '%'})</div>
+            <div class="integrity-status">${hasWarn ? '⚠' : '✓'} ${Util.escapeHtml(I18N.t('integrity.compareDone'))}</div>
+            <div class="integrity-detail">${Util.escapeHtml(I18N.t('integrity.diffSummary', {sign, n: Util.fmtNumber(cmp.summary.diff), pct: pctStr}))}</div>
           `;
         }
         return;
@@ -5830,23 +5885,23 @@ const Views = {
 
       bar.innerHTML = `
         <div class="device-bar-item">
-          <span class="device-bar-label">デバイス</span>
+          <span class="device-bar-label">${Util.escapeHtml(I18N.t('device.label.device'))}</span>
           <span class="device-bar-value">${Util.escapeHtml(r.deviceName || '-')}${!r.romAutoOK ? ` <span class="--note" style="opacity:0.6;font-size:11px">${Util.escapeHtml(I18N.t('badge.estimated'))}</span>` : ''}</span>
         </div>
         <div class="device-bar-item">
-          <span class="device-bar-label">シリーズ</span>
+          <span class="device-bar-label">${Util.escapeHtml(I18N.t('device.label.series'))}</span>
           <span class="device-bar-value --text">${Util.escapeHtml(r.romInfo.series || '-')}${!r.romAutoOK ? ` <span class="--note" style="opacity:0.6;font-size:11px">${Util.escapeHtml(I18N.t('badge.estimated'))}</span>` : ''}</span>
         </div>
         <div class="device-bar-item">
-          <span class="device-bar-label">コンパイラ</span>
+          <span class="device-bar-label">${Util.escapeHtml(I18N.t('device.label.compiler'))}</span>
           <span class="device-bar-value --text">${Util.fmtCompiler(r.compiler)}${r.compilerInferred ? ` <span class="--note" style="opacity:0.6;font-size:11px">${Util.escapeHtml(I18N.t('badge.estimated'))}</span>` : ''}</span>
         </div>
         <div class="device-bar-item">
-          <span class="device-bar-label">ミラー</span>
+          <span class="device-bar-label">${Util.escapeHtml(I18N.t('device.label.mirror'))}</span>
           <span class="device-bar-value --text">${mirrorBadge}</span>
         </div>
         <div class="device-bar-item" style="flex: 1; min-width: 0;">
-          <span class="device-bar-label">ファイル</span>
+          <span class="device-bar-label">${Util.escapeHtml(I18N.t('device.label.file'))}</span>
           <span class="device-bar-value --text device-bar-value-truncate" title="${Util.escapeHtml(r.fileName)}">${Util.escapeHtml(r.fileName)}</span>
         </div>
       `;
@@ -5876,22 +5931,22 @@ const Views = {
 
       grid.innerHTML = `
         <div class="kpi-card">
-          <div class="kpi-label">ROM容量</div>
+          <div class="kpi-label">${Util.escapeHtml(I18N.t('kpi.romCapacity'))}</div>
           <div class="kpi-value">${r.romCapacityKB}<span class="kpi-unit">KB</span></div>
           <div class="kpi-sub">${Util.fmtNumber(r.romCapacityB)} B</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">使用量</div>
+          <div class="kpi-label">${Util.escapeHtml(I18N.t('kpi.used'))}</div>
           <div class="kpi-value">${Util.fmtKB(r.totalUsed)}<span class="kpi-unit">KB</span></div>
           <div class="kpi-sub">${Util.fmtNumber(r.totalUsed)} B</div>
         </div>
         <div class="kpi-card ${cls}">
-          <div class="kpi-label">使用率</div>
+          <div class="kpi-label">${Util.escapeHtml(I18N.t('kpi.usageRate'))}</div>
           <div class="kpi-value">${Util.fmtPct(pct)}<span class="kpi-unit">%</span></div>
           <div class="kpi-sub">${label}</div>
         </div>
         <div class="kpi-card ${cls}">
-          <div class="kpi-label">残量</div>
+          <div class="kpi-label">${Util.escapeHtml(I18N.t('kpi.remaining'))}</div>
           <div class="kpi-value">${Util.fmtKB(remain)}<span class="kpi-unit">KB</span></div>
           <div class="kpi-sub">${Util.fmtNumber(remain)} B</div>
         </div>
@@ -5937,7 +5992,7 @@ const Views = {
           const dfLo = fmt(mDevice.dfMirror.lower);
           const dfHi = fmt(mDevice.dfMirror.upper);
           dfRow = `
-            <dt>DFミラー</dt>
+            <dt>${Util.escapeHtml(I18N.t('mirror.label.dfMirror'))}</dt>
             <dd>${dfLo}-${dfHi} (${mDevice.dfMirror.sizeKB} KB)</dd>`;
         }
 
@@ -5955,26 +6010,26 @@ const Views = {
           ? ` <span class="--note" style="font-family:inherit;font-size:11px;color:var(--text-muted)">(${Util.escapeHtml(I18N.t('mirror.maaEstimated', {bank}))})</span>`
           : '';
         sourceRow = `
-            <dt>ミラー元</dt>
+            <dt>${Util.escapeHtml(I18N.t('mirror.label.source'))}</dt>
             <dd>${srcLo}-${srcHi}${bankNote}</dd>`;
 
         summaryHtml = `
           <div class="mirror-card-summary">
-            <div class="mirror-card-status --available">ミラー機能あり</div>
+            <div class="mirror-card-status --available">${Util.escapeHtml(I18N.t('mirror.available'))}</div>
             <dl class="mirror-card-detail">
-              <dt>領域</dt>
+              <dt>${Util.escapeHtml(I18N.t('mirror.label.area'))}</dt>
               <dd>${lowerHex}-${upperHex}</dd>
-              <dt>サイズ</dt>
+              <dt>${Util.escapeHtml(I18N.t('mirror.label.size'))}</dt>
               <dd>${sizeStr}</dd>${sourceRow}${dfRow}
             </dl>
           </div>`;
       } else {
         summaryHtml = `
           <div class="mirror-card-summary">
-            <div class="mirror-card-status --none">ミラー機能なし</div>
+            <div class="mirror-card-status --none">${Util.escapeHtml(I18N.t('mirror.none'))}</div>
             <dl class="mirror-card-detail">
-              <dt>説明</dt>
-              <dd class="--note">このデバイスはハードウェアミラー機能を持ちません。F領域(0xF0000-0xFFFFF)へのセクション配置は集計対象外となります。</dd>
+              <dt>${Util.escapeHtml(I18N.t('mirror.label.desc'))}</dt>
+              <dd class="--note">${Util.escapeHtml(I18N.t('mirror.noneDesc'))}</dd>
             </dl>
           </div>`;
       }
@@ -5983,14 +6038,14 @@ const Views = {
       const noteHtml = `
         <div class="mirror-card-note-pane">
           <div class="mirror-card-note">
-            ※ ミラー領域はROM容量とは独立した存在で、ROM使用率には含まれません。
+            ${Util.escapeHtml(I18N.t('mirror.note'))}
           </div>
         </div>`;
 
       card.innerHTML = `
         <div class="card-header">
-          <h2 class="card-title">ミラー領域情報</h2>
-          <div class="card-subtitle">${Util.escapeHtml(r.romInfo.series || '-')} ${r.romCapacityKB}KB品のハードウェアミラー領域</div>
+          <h2 class="card-title">${Util.escapeHtml(I18N.t('mirror.title'))}</h2>
+          <div class="card-subtitle">${Util.escapeHtml(I18N.t('mirror.cardSubtitle', {series: r.romInfo.series || '-', kb: r.romCapacityKB}))}</div>
         </div>
         <div class="mirror-card">
           ${summaryHtml}
@@ -6061,7 +6116,7 @@ const Views = {
         legend.replaceChildren();
         const lg = document.createElement('div');
         lg.className = 'donut-legend-item';
-        lg.innerHTML = `<span class="donut-legend-swatch" style="background:${gray};border:1px solid var(--border)"></span><span style="color: var(--text-muted)">データなし</span>`;
+        lg.innerHTML = `<span class="donut-legend-swatch" style="background:${gray};border:1px solid var(--border)"></span><span style="color: var(--text-muted)">${Util.escapeHtml(I18N.t('donut.empty'))}</span>`;
         legend.appendChild(lg);
         return;
       }
@@ -6130,7 +6185,7 @@ const Views = {
       {
         const item = document.createElement('div');
         item.className = 'legend-item';
-        item.innerHTML = `<span class="legend-swatch" style="background:rgba(0,0,0,0.10);border:1px solid var(--border)"></span>空き領域`;
+        item.innerHTML = `<span class="legend-swatch" style="background:rgba(0,0,0,0.10);border:1px solid var(--border)"></span>${Util.escapeHtml(I18N.t('memmap.legend.free'))}`;
         item.title = I18N.t('memmap.legend.unused');
         el.appendChild(item);
       }
@@ -7299,7 +7354,7 @@ const Views = {
           <div class="compare-side-card --${side}">
             <div class="compare-side-label">${labelMap[side]}</div>
             <div class="compare-side-name" title="${Util.escapeHtml(mapResult.fileName)}">${Util.escapeHtml(mapResult.fileName)}</div>
-            <div class="compare-side-stats">${Util.fmtCompiler(mapResult.compiler)} · ${Util.escapeHtml(mapResult.deviceName || '-')} · ${agg.fileCats.length}ファイル</div>
+            <div class="compare-side-stats">${Util.fmtCompiler(mapResult.compiler)} · ${Util.escapeHtml(mapResult.deviceName || '-')} · ${Util.escapeHtml(I18N.t('slot.fileCount', {n: agg.fileCats.length}))}</div>
             <div class="compare-side-total">${Util.fmtNumber(total)} <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">B</span></div>
           </div>
         `;
@@ -7343,10 +7398,10 @@ const Views = {
         area.innerHTML = `
           <div class="compare-empty">
             <div class="compare-empty-icon">⇄</div>
-            <div class="compare-empty-title">比較する2つのmapファイルを投入してください</div>
+            <div class="compare-empty-title">${Util.escapeHtml(I18N.t('compare.empty.title'))}</div>
             <div style="font-size: 12px; color: var(--text-muted); margin-top: 12px; line-height: 1.7;">
-              ベース: ${baseStr}<br>
-              比較先: ${targetStr}
+              ${Util.escapeHtml(I18N.t('compare.empty.base'))}: ${baseStr}<br>
+              ${Util.escapeHtml(I18N.t('compare.empty.target'))}: ${targetStr}
             </div>
           </div>
         `;
@@ -7435,8 +7490,8 @@ const Views = {
       html += `
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">カテゴリ別差分</h2>
-            <div class="card-subtitle">5カテゴリそれぞれの増減</div>
+            <h2 class="card-title">${Util.escapeHtml(I18N.t('compare.byCat.title'))}</h2>
+            <div class="card-subtitle">${Util.escapeHtml(I18N.t('compare.byCat.subtitle'))}</div>
           </div>
           <div class="data-table-wrap">
             <table class="data-table">
@@ -8086,8 +8141,8 @@ const App = {
     toast.setAttribute('aria-live', 'polite');
     toast.innerHTML = `
       <span class="compare-ready-toast-icon" aria-hidden="true">⇄</span>
-      <span class="compare-ready-toast-text">比較タブが有効になりました</span>
-      <span class="compare-ready-toast-action">クリックで開く</span>
+      <span class="compare-ready-toast-text">${Util.escapeHtml(I18N.t('toast.compareReady.text'))}</span>
+      <span class="compare-ready-toast-action">${Util.escapeHtml(I18N.t('toast.compareReady.action'))}</span>
     `;
     toast.addEventListener('click', () => {
       App.switchTab('compare');

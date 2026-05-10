@@ -2542,6 +2542,8 @@ input[type="file"] { display: none; }
       <select id="langSelect" class="brand-lang-select" aria-label="Language" data-i18n-attr="aria-label:sidebar.langSwitch">
         <option value="ja">日本語</option>
         <option value="en">English</option>
+        <option value="zh">中文</option>
+        <option value="de">Deutsch</option>
       </select>
     </div>
 
@@ -2633,6 +2635,8 @@ input[type="file"] { display: none; }
         <select id="welcomeLangSelect" class="welcome-card-lang-select" aria-label="Language" data-i18n-attr="aria-label:sidebar.langSwitch">
           <option value="ja">日本語</option>
           <option value="en">English</option>
+          <option value="zh">中文</option>
+          <option value="de">Deutsch</option>
         </select>
         <div class="welcome-brand">
           <div class="welcome-brand-mark">M</div>
@@ -2951,8 +2955,9 @@ input[type="file"] { display: none; }
 const LANG = Object.freeze({
   JA: 'ja',
   EN: 'en',
+  ZH: 'zh',  // 中文 (簡体字 / Simplified Chinese)
+  DE: 'de',  // Deutsch / German
   // 将来追加例:
-  // ZH: 'zh',     // 中文
   // KO: 'ko',     // 한국어
 });
 
@@ -2965,434 +2970,367 @@ const LANG = Object.freeze({
 const I18N = {
   current: LANG.JA,
   STORAGE_KEY: 'mcumap.lang',
-  // フォールバック順 (現在言語にキーが無い場合)
-  FALLBACK_ORDER: [LANG.JA, LANG.EN],
+  // フォールバック順 (現在言語にキーが無い場合)。
+  // 多言語対応で zh/de でキー漏れ等があっても、まず en (国際的に通じやすい) → ja の順で
+  // 表示する。en/de/zh のユーザに日本語表示が混じる事故を抑止。
+  FALLBACK_ORDER: [LANG.EN, LANG.JA],
 
   /** 全文言テーブル。値オブジェクトの各キーが言語コード。
    *  順次フェーズ毎に追加していく(現状はフェーズ1の動作確認用最小セット)。 */
   STRINGS: {
     // タブ名
-    'tab.overview': { ja: '概要',         en: 'Overview' },
-    'tab.files':    { ja: 'ファイル別',   en: 'By File' },
-    'tab.memmap':   { ja: 'メモリマップ', en: 'Memory Map' },
-    'tab.raw':      { ja: 'rawデータ',    en: 'Raw Data' },
-    'tab.compare':  { ja: '比較結果',     en: 'Compare' },
+    'tab.overview': { ja: '概要', en: 'Overview', zh: '概览', de: 'Übersicht' },
+    'tab.files': { ja: 'ファイル別', en: 'By File', zh: '按文件', de: 'Nach Datei' },
+    'tab.memmap': { ja: 'メモリマップ', en: 'Memory Map', zh: '内存映射', de: 'Memory-Map' },
+    'tab.raw': { ja: 'rawデータ', en: 'Raw Data', zh: '原始数据', de: 'Rohdaten' },
+    'tab.compare': { ja: '比較結果', en: 'Compare', zh: '比较结果', de: 'Vergleich' },
     // サイドバーセクション
-    'sidebar.input':       { ja: 'mapファイル投入', en: 'Input' },
-    'sidebar.navigation':  { ja: 'ビュー切替',      en: 'Navigation' },
-    'sidebar.integrity':   { ja: '整合性',          en: 'Integrity' },
-    'sidebar.langSwitch':  { ja: '言語',            en: 'Language' },
+    'sidebar.input': { ja: 'mapファイル投入', en: 'Input', zh: '载入map文件', de: 'Map-Datei laden' },
+    'sidebar.navigation': { ja: 'ビュー切替', en: 'Navigation', zh: '视图切换', de: 'Ansicht wechseln' },
+    'sidebar.integrity': { ja: '整合性', en: 'Integrity', zh: '完整性', de: 'Integrität' },
+    'sidebar.langSwitch': { ja: '言語', en: 'Language', zh: '语言', de: 'Sprache' },
     // 言語名（切替セレクタ表示用）。
     // i18n慣例: 各言語名は「自国語表記」で固定する（現在言語に追従させない）。
     // → ユーザが自分の母語が選択肢にあることを認識できる。
-    'lang.ja': { ja: '日本語',  en: '日本語' },
-    'lang.en': { ja: 'English', en: 'English' },
+    'lang.ja': { ja: '日本語', en: '日本語', zh: '日本語', de: '日本語' },
+    'lang.en': { ja: 'English', en: 'English', zh: 'English', de: 'English' },
 
     // ====== フェーズ2: HTML静的部 ======
     // 入力スロット (map A / B)
-    'slot.mapA.title':       { ja: 'map ファイル',           en: 'map file' },
-    'slot.mapA.required':    { ja: '必須',                   en: 'Required' },
-    'slot.mapA.empty':       { ja: 'クリック / ドロップで投入', en: 'Click or drop to load' },
-    'slot.mapA.aria':        { ja: 'ベースmapファイルを選択',  en: 'Select base map file' },
-    'slot.mapB.title':       { ja: '比較先 map',             en: 'Target map' },
-    'slot.mapB.optional':    { ja: '比較用',                 en: 'Optional' },
-    'slot.mapB.empty':       { ja: '投入で比較タブが有効化',  en: 'Load to enable Compare tab' },
-    'slot.mapB.aria':        { ja: '比較先mapファイルを選択', en: 'Select target map file' },
-    'slot.mapB.title.tip':   { ja: '2つのmapを並べて差分を見たい場合に投入してください。ファイル別の増減や全体のROM使用量変化を確認できます。',
-                                en: 'Load a second map to compare side-by-side. View per-file changes and overall ROM usage shift.' },
+    'slot.mapA.title': { ja: 'map ファイル', en: 'map file', zh: 'map 文件', de: 'Map-Datei' },
+    'slot.mapA.required': { ja: '必須', en: 'Required', zh: '必填', de: 'Erforderlich' },
+    'slot.mapA.empty': { ja: 'クリック / ドロップで投入', en: 'Click or drop to load', zh: '点击 / 拖放载入', de: 'Klicken oder Dropping zum Laden' },
+    'slot.mapA.aria': { ja: 'ベースmapファイルを選択', en: 'Select base map file', zh: '选择基准 map 文件', de: 'Basis-Map-Datei wählen' },
+    'slot.mapB.title': { ja: '比較先 map', en: 'Target map', zh: '比较目标 map', de: 'Vergleichs-Map' },
+    'slot.mapB.optional': { ja: '比較用', en: 'Optional', zh: '比较用', de: 'Optional' },
+    'slot.mapB.empty': { ja: '投入で比較タブが有効化', en: 'Load to enable Compare tab', zh: '载入后启用比较页', de: 'Laden, um den Vergleichs-Tab zu aktivieren' },
+    'slot.mapB.aria': { ja: '比較先mapファイルを選択', en: 'Select target map file', zh: '选择比较目标 map 文件', de: 'Vergleichs-Map-Datei wählen' },
+    'slot.mapB.title.tip': { ja: '2つのmapを並べて差分を見たい場合に投入してください。ファイル別の増減や全体のROM使用量変化を確認できます。', en: 'Load a second map to compare side-by-side. View per-file changes and overall ROM usage shift.', zh: '载入第二个 map 进行差异比较。可查看每个文件的增减以及整体 ROM 使用量的变化。', de: 'Eine zweite Map für den Vergleich laden. Zeigt Änderungen pro Datei und gesamten ROM-Verbrauch.' },
 
     // ナビゲーションaria
-    'nav.aria':              { ja: 'ビュー切替',  en: 'View switch' },
+    'nav.aria': { ja: 'ビュー切替', en: 'View switch', zh: '视图切换', de: 'Ansicht wechseln' },
 
     // 整合性パネル初期表示
-    'integrity.empty.status': { ja: '— 未投入',                  en: '— Not loaded' },
-    'integrity.empty.detail': { ja: 'mapファイルを投入してください', en: 'Please load a map file' },
+    'integrity.empty.status': { ja: '— 未投入', en: '— Not loaded', zh: '— 未载入', de: '— Nicht geladen' },
+    'integrity.empty.detail': { ja: 'mapファイルを投入してください', en: 'Please load a map file', zh: '请载入 map 文件', de: 'Bitte eine Map-Datei laden' },
 
     // ウェルカム画面
-    'welcome.dropzone.title':   { ja: 'mapファイルを投入してください', en: 'Please load a map file' },
-    'welcome.dropzone.desc':    { ja: 'ここにドロップ または ボタンから選択', en: 'Drop here or click the button below' },
-    'welcome.dropzone.btn':     { ja: '📁 ファイルを選択',       en: '📁 Choose File' },
-    'welcome.dropzone.btnAria': { ja: 'mapファイルを選択ダイアログから開く', en: 'Open file picker to choose a map file' },
-    'welcome.fileInputAria':    { ja: 'mapファイルを選択',        en: 'Select map file' },
-    'welcome.sample.btn':       { ja: 'サンプルファイルを解析',    en: 'Try sample file' },
-    'welcome.sample.tip':       { ja: 'リポジトリの匿名化済みサンプル(RL78/G23 384KB品)を読み込みます', en: 'Load the anonymized sample map (RL78/G23 384KB) from the repository' },
-    'welcome.sample.loading':   { ja: 'サンプル読み込み中...',     en: 'Loading sample...' },
-    'welcome.sample.failed':    { ja: 'サンプル読み込み失敗: {msg}\n※ サンプル読み込みは GitHub Pages 版でのみ動作します。', en: 'Sample load failed: {msg}\n* Sample loading only works on the GitHub Pages version.' },
-    'welcome.hint.compilers':   { ja: '対応コンパイラ',           en: 'Supported compilers' },
-    'welcome.hint.future':      { ja: '将来対応予定',             en: 'Future support planned' },
-    'welcome.hint.format':      { ja: '対応形式',                 en: 'Supported formats' },
-    'welcome.hint.formatVal':   { ja: '.map / .map.txt / .lis（最大20MB）', en: '.map / .map.txt / .lis (max 20MB)' },
-    'welcome.hint.analysis':    { ja: '解析内容',                 en: 'Analysis includes' },
-    'welcome.hint.analysisVal': { ja: 'ROM使用率、ファイル別、メモリ配置、2map差分など',
-                                   en: 'ROM usage, by-file breakdown, memory layout, 2-map diff, and more' },
-    'welcome.hint.mobile':      { ja: 'モバイルでファイルが選べない場合', en: 'If your mobile cannot pick the file' },
-    'welcome.hint.mobileVal':   { ja: 'ファイル名を一旦 .txt にリネームしてから投入してください',
-                                   en: 'Rename the file to .txt temporarily, then load it' },
+    'welcome.dropzone.title': { ja: 'mapファイルを投入してください', en: 'Please load a map file', zh: '请载入 map 文件', de: 'Bitte eine Map-Datei laden' },
+    'welcome.dropzone.desc': { ja: 'ここにドロップ または ボタンから選択', en: 'Drop here or click the button below', zh: '拖放至此处或点击下方按钮', de: 'Hier ablegen oder unten klicken' },
+    'welcome.dropzone.btn': { ja: '📁 ファイルを選択', en: '📁 Choose File', zh: '📁 选择文件', de: '📁 Datei wählen' },
+    'welcome.dropzone.btnAria': { ja: 'mapファイルを選択ダイアログから開く', en: 'Open file picker to choose a map file', zh: '打开文件选择对话框', de: 'Dateiauswahl öffnen' },
+    'welcome.fileInputAria': { ja: 'mapファイルを選択', en: 'Select map file', zh: '选择 map 文件', de: 'Map-Datei wählen' },
+    'welcome.sample.btn': { ja: 'サンプルファイルを解析', en: 'Try sample file', zh: '试用样例文件', de: 'Beispieldatei testen' },
+    'welcome.sample.tip': { ja: 'リポジトリの匿名化済みサンプル(RL78/G23 384KB品)を読み込みます', en: 'Load the anonymized sample map (RL78/G23 384KB) from the repository', zh: '载入仓库内已匿名化的样例 (RL78/G23 384KB 型号)', de: 'Anonymisierte Beispiel-Map (RL78/G23 384KB) aus dem Repo laden' },
+    'welcome.sample.loading': { ja: 'サンプル読み込み中...', en: 'Loading sample...', zh: '载入样例中...', de: 'Beispiel wird geladen...' },
+    'welcome.sample.failed': { ja: 'サンプル読み込み失敗: {msg}\n※ サンプル読み込みは GitHub Pages 版でのみ動作します。', en: 'Sample load failed: {msg}\n* Sample loading only works on the GitHub Pages version.', zh: '样例载入失败: {msg}\n※ 样例载入仅在 GitHub Pages 版本中可用。', de: 'Beispiel-Laden fehlgeschlagen: {msg}\n* Funktioniert nur in der GitHub Pages-Version.' },
+    'welcome.hint.compilers': { ja: '対応コンパイラ', en: 'Supported compilers', zh: '支持的编译器', de: 'Unterstützte Compiler' },
+    'welcome.hint.future': { ja: '将来対応予定', en: 'Future support planned', zh: '计划支持', de: 'Geplant' },
+    'welcome.hint.format': { ja: '対応形式', en: 'Supported formats', zh: '支持的格式', de: 'Unterstützte Formate' },
+    'welcome.hint.formatVal': { ja: '.map / .map.txt / .lis（最大20MB）', en: '.map / .map.txt / .lis (max 20MB)', zh: '.map / .map.txt / .lis (最大 20MB)', de: '.map / .map.txt / .lis (max. 20 MB)' },
+    'welcome.hint.analysis': { ja: '解析内容', en: 'Analysis includes', zh: '分析内容', de: 'Analyseinhalt' },
+    'welcome.hint.analysisVal': { ja: 'ROM使用率、ファイル別、メモリ配置、2map差分など', en: 'ROM usage, by-file breakdown, memory layout, 2-map diff, and more', zh: 'ROM 使用率, 按文件分类, 内存布局, 双 map 差异等', de: 'ROM-Auslastung, Datei-Aufteilung, Memory-Layout, 2-Map-Diff u.a.' },
+    'welcome.hint.mobile': { ja: 'モバイルでファイルが選べない場合', en: 'If your mobile cannot pick the file', zh: '在手机上无法选择文件时', de: 'Wenn die Datei auf dem Handy nicht ausgewählt werden kann' },
+    'welcome.hint.mobileVal': { ja: 'ファイル名を一旦 .txt にリネームしてから投入してください', en: 'Rename the file to .txt temporarily, then load it', zh: '请暂时将文件改名为 .txt 后再载入', de: 'Datei vorübergehend in .txt umbenennen und dann laden' },
 
     // 商標表記(welcome画面下部、map読み込み前のみ表示)
-    'welcome.trademark':        { ja: 'CC-RL / CC-RX / CC-RH / CA78K0R / RL78 はルネサス エレクトロニクス株式会社の商標または登録商標です。本ツールはルネサス エレクトロニクス株式会社の製品ではなく、同社の公認・支援を受けたものでもありません。',
-                                   en: 'CC-RL, CC-RX, CC-RH, CA78K0R, and RL78 are trademarks or registered trademarks of Renesas Electronics Corporation. This tool is not a Renesas Electronics product and is not affiliated with or endorsed by Renesas Electronics Corporation.' },
-    'welcome.license.noWarranty': { ja: '無保証', en: 'No warranty' },
+    'welcome.trademark': { ja: 'CC-RL / CC-RX / CC-RH / CA78K0R / RL78 はルネサス エレクトロニクス株式会社の商標または登録商標です。本ツールはルネサス エレクトロニクス株式会社の製品ではなく、同社の公認・支援を受けたものでもありません。', en: 'CC-RL, CC-RX, CC-RH, CA78K0R, and RL78 are trademarks or registered trademarks of Renesas Electronics Corporation. This tool is not a Renesas Electronics product and is not affiliated with or endorsed by Renesas Electronics Corporation.', zh: 'CC-RL / CC-RX / CC-RH / CA78K0R / RL78 是瑞萨电子株式会社的商标或注册商标。本工具不是瑞萨电子的产品,也未获得瑞萨电子的认可或赞助。', de: 'CC-RL, CC-RX, CC-RH, CA78K0R und RL78 sind Marken oder eingetragene Marken der Renesas Electronics Corporation. Dieses Werkzeug ist kein Renesas-Produkt und wird nicht von Renesas unterstützt oder beworben.' },
+    'welcome.license.noWarranty': { ja: '無保証', en: 'No warranty', zh: '无任何担保', de: 'Keine Gewährleistung' },
 
     // 概要タブ
-    'overview.title':       { ja: 'ROM使用状況の俯瞰', en: 'ROM Usage Overview' },
-    'card.romUsage.title':  { ja: 'ROM使用率',         en: 'ROM Usage' },
-    'card.romUsage.desc':   { ja: '容量に対する使用率', en: 'Usage rate vs total capacity' },
-    'card.cat.title':       { ja: 'カテゴリ別内訳',     en: 'By Category' },
-    'card.cat.desc':        { ja: '5カテゴリの使用比率', en: 'Usage ratio across 5 categories' },
+    'overview.title': { ja: 'ROM使用状況の俯瞰', en: 'ROM Usage Overview', zh: 'ROM 使用情况概览', de: 'ROM-Nutzungsübersicht' },
+    'card.romUsage.title': { ja: 'ROM使用率', en: 'ROM Usage', zh: 'ROM 使用率', de: 'ROM-Auslastung' },
+    'card.romUsage.desc': { ja: '容量に対する使用率', en: 'Usage rate vs total capacity', zh: '相对于总容量的使用率', de: 'Auslastung relativ zur Gesamtkapazität' },
+    'card.cat.title': { ja: 'カテゴリ別内訳', en: 'By Category', zh: '按类别分类', de: 'Nach Kategorie' },
+    'card.cat.desc': { ja: '5カテゴリの使用比率', en: 'Usage ratio across 5 categories', zh: '5 个类别的占比', de: 'Verhältnis über 5 Kategorien' },
 
     // ナビゲーションカード（タブ誘導カード）
-    'navcard.files.title':  { ja: 'ファイル別の詳細', en: 'By-File Details' },
-    'navcard.files.desc':   { ja: 'ファイルのサイズ・カテゴリ内訳をテーブル/グラフで確認',
-                                en: 'Inspect file sizes and category breakdown in tables and charts' },
-    'navcard.memmap.title': { ja: 'メモリ配置を見る', en: 'View Memory Layout' },
-    'navcard.memmap.desc':  { ja: 'ROM領域全体のセクション配置を実アドレスで可視化',
-                                en: 'Visualize section placement across ROM at actual addresses' },
-    'navcard.raw.desc':     { ja: 'パースされたセクション・ファイル内訳の生データ',
-                                en: 'Raw parsed data of sections and file breakdown' },
+    'navcard.files.title': { ja: 'ファイル別の詳細', en: 'By-File Details', zh: '按文件查看详情', de: 'Datei-Details' },
+    'navcard.files.desc': { ja: 'ファイルのサイズ・カテゴリ内訳をテーブル/グラフで確認', en: 'Inspect file sizes and category breakdown in tables and charts', zh: '用表格/图表查看文件大小和类别分布', de: 'Größen und Kategorie-Aufteilung in Tabelle/Diagramm anzeigen' },
+    'navcard.memmap.title': { ja: 'メモリ配置を見る', en: 'View Memory Layout', zh: '查看内存布局', de: 'Memory-Layout anzeigen' },
+    'navcard.memmap.desc': { ja: 'ROM領域全体のセクション配置を実アドレスで可視化', en: 'Visualize section placement across ROM at actual addresses', zh: '以实际地址可视化整个 ROM 区域的段配置', de: 'Sektionsanordnung im gesamten ROM mit echten Adressen visualisieren' },
+    'navcard.raw.desc': { ja: 'パースされたセクション・ファイル内訳の生データ', en: 'Raw parsed data of sections and file breakdown', zh: '已解析的段和文件分布的原始数据', de: 'Rohdaten der geparsten Sektionen und Dateiaufteilung' },
 
     // ファイル別タブ
-    'files.searchTip':      { ja: '部分一致検索 (大文字小文字区別なし)。複数キーワード検索は未対応。',
-                                en: 'Partial match (case-insensitive). Multi-keyword search not supported.' },
-    'files.searchPh':       { ja: 'ファイル名で検索...', en: 'Search by file name...' },
-    'filter.all':           { ja: 'すべて',     en: 'All' },
-    'filter.code':          { ja: 'コード',     en: 'Code' },
-    'filter.const':         { ja: '定数',       en: 'Const' },
-    'filter.rfd':           { ja: 'RFD',        en: 'RFD' },
-    'filter.lib':           { ja: 'その他Lib',  en: 'Other Lib' },
-    'filter.sys':           { ja: 'システム',   en: 'System' },
-    'files.csvBtn':         { ja: '📥 CSV出力', en: '📥 Export CSV' },
-    'files.csvBtnTip':      { ja: '表示中のファイル一覧をCSVで出力',
-                                en: 'Export the visible file list as CSV' },
-    'files.chartTitle':     { ja: 'ファイル別グラフ', en: 'By-File Chart' },
-    'files.chartDesc':      { ja: '並び順は下のテーブルと連動 · 5カテゴリの積み上げ',
-                                en: 'Order syncs with table below · 5-category stacked bars' },
-    'files.tableTitle':     { ja: 'ファイル別 ROM 使用量', en: 'By-File ROM Usage' },
-    'files.tableDesc':      { ja: '列ヘッダクリックでソート', en: 'Click column header to sort' },
-    'files.colName':        { ja: 'ファイル名',  en: 'File name' },
-    'files.colTotal':       { ja: '合計',        en: 'Total' },
-    'files.colPct':         { ja: '比率',        en: 'Ratio' },
+    'files.searchTip': { ja: '部分一致検索 (大文字小文字区別なし)。複数キーワード検索は未対応。', en: 'Partial match (case-insensitive). Multi-keyword search not supported.', zh: '部分匹配搜索 (不区分大小写)。不支持多关键字。', de: 'Teilstring-Suche (Groß-/Kleinschreibung egal). Mehrere Schlüsselwörter nicht unterstützt.' },
+    'files.searchPh': { ja: 'ファイル名で検索...', en: 'Search by file name...', zh: '按文件名搜索...', de: 'Nach Dateiname suchen...' },
+    'filter.all': { ja: 'すべて', en: 'All', zh: '全部', de: 'Alle' },
+    'filter.code': { ja: 'コード', en: 'Code', zh: '代码', de: 'Code' },
+    'filter.const': { ja: '定数', en: 'Const', zh: '常量', de: 'Konstanten' },
+    'filter.rfd': { ja: 'RFD', en: 'RFD', zh: 'RFD', de: 'RFD' },
+    'filter.lib': { ja: 'その他Lib', en: 'Other Lib', zh: '其他 Lib', de: 'Andere Lib' },
+    'filter.sys': { ja: 'システム', en: 'System', zh: '系统', de: 'System' },
+    'files.csvBtn': { ja: '📥 CSV出力', en: '📥 Export CSV', zh: '📥 导出 CSV', de: '📥 CSV exportieren' },
+    'files.csvBtnTip': { ja: '表示中のファイル一覧をCSVで出力', en: 'Export the visible file list as CSV', zh: '将当前显示的文件列表导出为 CSV', de: 'Sichtbare Dateiliste als CSV exportieren' },
+    'files.chartTitle': { ja: 'ファイル別グラフ', en: 'By-File Chart', zh: '按文件图表', de: 'Diagramm nach Datei' },
+    'files.chartDesc': { ja: '並び順は下のテーブルと連動 · 5カテゴリの積み上げ', en: 'Order syncs with table below · 5-category stacked bars', zh: '排序与下方表格联动 · 5 类别堆叠条形图', de: 'Reihenfolge synchron mit Tabelle · 5 gestapelte Kategorien' },
+    'files.tableTitle': { ja: 'ファイル別 ROM 使用量', en: 'By-File ROM Usage', zh: '按文件 ROM 使用量', de: 'ROM-Verbrauch nach Datei' },
+    'files.tableDesc': { ja: '列ヘッダクリックでソート', en: 'Click column header to sort', zh: '点击列表头排序', de: 'Spaltenkopf zum Sortieren klicken' },
+    'files.colName': { ja: 'ファイル名', en: 'File name', zh: '文件名', de: 'Dateiname' },
+    'files.colTotal': { ja: '合計', en: 'Total', zh: '总计', de: 'Gesamt' },
+    'files.colPct': { ja: '比率', en: 'Ratio', zh: '比率', de: 'Anteil' },
 
     // メモリマップタブ
-    'memmap.title':         { ja: 'メモリ配置（詳細）', en: 'Memory Layout (Detail)' },
-    'memmap.desc':          { ja: 'ROM領域全体をファイル単位で表示 · Alt+ホイールで拡縮',
-                                en: 'Display entire ROM by file · Alt+wheel to zoom' },
-    'memmap.modeLabel':     { ja: '色分け:',        en: 'Color by:' },
-    'memmap.mode.cat':      { ja: 'カテゴリ別',     en: 'Category' },
-    'memmap.mode.file':     { ja: 'ファイル別',     en: 'File' },
-    'memmap.mode.cat.tip':  { ja: 'セクションのカテゴリ(コード/定数/RFD/Lib/システム)で色分け',
-                                en: 'Color sections by category (Code/Const/RFD/Lib/System)' },
-    'memmap.mode.file.tip': { ja: 'ファイル(モジュール)単位で色分け、同じファイルは同じ色',
-                                en: 'Color by file (module); same file shares the same color' },
-    'memmap.rowsLabel':     { ja: '行幅:',          en: 'Row width:' },
-    'memmap.row.auto':      { ja: '自動',          en: 'Auto' },
-    'memmap.row.32B':       { ja: '32 B/行',       en: '32 B/row' },
-    'memmap.row.64B':       { ja: '64 B/行',       en: '64 B/row' },
-    'memmap.row.128B':      { ja: '128 B/行',      en: '128 B/row' },
-    'memmap.row.256B':      { ja: '256 B/行',      en: '256 B/row' },
-    'memmap.row.1K':        { ja: '1 KB/行',       en: '1 KB/row' },
-    'memmap.row.4K':        { ja: '4 KB/行',       en: '4 KB/row' },
-    'memmap.row.16K':       { ja: '16 KB/行',      en: '16 KB/row' },
-    'memmap.row.64K':       { ja: '64 KB/行',      en: '64 KB/row' },
-    'memmap.row.256K':      { ja: '256 KB/行',     en: '256 KB/row' },
-    'memmap.searchPh':      { ja: 'ファイル名で絞り込み...', en: 'Filter by file name...' },
-    'memmap.searchTip':     { ja: 'ファイル名・セクション名の部分一致 (大文字小文字区別なし)。一致した配置のみハイライト表示。',
-                                en: 'Partial match on file/section name (case-insensitive). Matching placements are highlighted.' },
-    'memmap.listTitle':     { ja: '配置リスト', en: 'Placement List' },
-    'memmap.listDesc':      { ja: 'アドレス順 · 全件', en: 'Sorted by address · All entries' },
+    'memmap.title': { ja: 'メモリ配置（詳細）', en: 'Memory Layout (Detail)', zh: '内存布局 (详细)', de: 'Memory-Layout (Detail)' },
+    'memmap.desc': { ja: 'ROM領域全体をファイル単位で表示 · Alt+ホイールで拡縮', en: 'Display entire ROM by file · Alt+wheel to zoom', zh: '按文件单位显示整个 ROM 区域 · 按 Alt+滚轮缩放', de: 'Ganzes ROM nach Datei anzeigen · Alt+Mausrad zum Zoomen' },
+    'memmap.modeLabel': { ja: '色分け:', en: 'Color by:', zh: '颜色:', de: 'Farbe nach:' },
+    'memmap.mode.cat': { ja: 'カテゴリ別', en: 'Category', zh: '按类别', de: 'Kategorie' },
+    'memmap.mode.file': { ja: 'ファイル別', en: 'File', zh: '按文件', de: 'Datei' },
+    'memmap.mode.cat.tip': { ja: 'セクションのカテゴリ(コード/定数/RFD/Lib/システム)で色分け', en: 'Color sections by category (Code/Const/RFD/Lib/System)', zh: '按段类别 (代码/常量/RFD/Lib/系统) 着色', de: 'Sektionen nach Kategorie (Code/Const/RFD/Lib/System) einfärben' },
+    'memmap.mode.file.tip': { ja: 'ファイル(モジュール)単位で色分け、同じファイルは同じ色', en: 'Color by file (module); same file shares the same color', zh: '按文件 (模块) 着色,同一文件同色', de: 'Nach Datei (Modul) einfärben; gleiche Datei = gleiche Farbe' },
+    'memmap.rowsLabel': { ja: '行幅:', en: 'Row width:', zh: '行宽:', de: 'Zeilenbreite:' },
+    'memmap.row.auto': { ja: '自動', en: 'Auto', zh: '自动', de: 'Auto' },
+    'memmap.row.32B': { ja: '32 B/行', en: '32 B/row', zh: '32 B/行', de: '32 B/Zeile' },
+    'memmap.row.64B': { ja: '64 B/行', en: '64 B/row', zh: '64 B/行', de: '64 B/Zeile' },
+    'memmap.row.128B': { ja: '128 B/行', en: '128 B/row', zh: '128 B/行', de: '128 B/Zeile' },
+    'memmap.row.256B': { ja: '256 B/行', en: '256 B/row', zh: '256 B/行', de: '256 B/Zeile' },
+    'memmap.row.1K': { ja: '1 KB/行', en: '1 KB/row', zh: '1 KB/行', de: '1 KB/Zeile' },
+    'memmap.row.4K': { ja: '4 KB/行', en: '4 KB/row', zh: '4 KB/行', de: '4 KB/Zeile' },
+    'memmap.row.16K': { ja: '16 KB/行', en: '16 KB/row', zh: '16 KB/行', de: '16 KB/Zeile' },
+    'memmap.row.64K': { ja: '64 KB/行', en: '64 KB/row', zh: '64 KB/行', de: '64 KB/Zeile' },
+    'memmap.row.256K': { ja: '256 KB/行', en: '256 KB/row', zh: '256 KB/行', de: '256 KB/Zeile' },
+    'memmap.searchPh': { ja: 'ファイル名で絞り込み...', en: 'Filter by file name...', zh: '按文件名筛选...', de: 'Nach Dateiname filtern...' },
+    'memmap.searchTip': { ja: 'ファイル名・セクション名の部分一致 (大文字小文字区別なし)。一致した配置のみハイライト表示。', en: 'Partial match on file/section name (case-insensitive). Matching placements are highlighted.', zh: '文件名/段名部分匹配 (不区分大小写)。仅高亮匹配的配置项。', de: 'Teilstring auf Datei-/Sektionsnamen (Groß-/Kleinschreibung egal). Nur Treffer werden hervorgehoben.' },
+    'memmap.listTitle': { ja: '配置リスト', en: 'Placement List', zh: '配置列表', de: 'Platzierungsliste' },
+    'memmap.listDesc': { ja: 'アドレス順 · 全件', en: 'Sorted by address · All entries', zh: '按地址排序 · 全部', de: 'Nach Adresse sortiert · Alle' },
 
     // raw タブ
-    'raw.totalSizeTitle':   { ja: 'セクション別総サイズ', en: 'Total Size by Section' },
-    'raw.totalSizeDesc':    { ja: 'Mapping List / Memory map から取得',
-                                en: 'Source: Mapping List / Memory map' },
-    'raw.colSection':       { ja: 'セクション',       en: 'Section' },
-    'raw.colStartAddr':     { ja: 'STARTアドレス',     en: 'Start address' },
-    'raw.colSizeB':         { ja: 'サイズ（B）',      en: 'Size (B)' },
-    'raw.colSizeHex':       { ja: 'サイズ（hex）',    en: 'Size (hex)' },
-    'raw.fileXSecTitle':    { ja: 'ファイル × セクション 内訳', en: 'File × Section Breakdown' },
-    'raw.fileXSecDesc':     { ja: 'Symbol List / Module 行から取得',
-                                en: 'Source: Symbol List / Module rows' },
-    'raw.colFile':          { ja: 'ファイル/モジュール', en: 'File / Module' },
+    'raw.totalSizeTitle': { ja: 'セクション別総サイズ', en: 'Total Size by Section', zh: '按段总大小', de: 'Gesamtgröße pro Sektion' },
+    'raw.totalSizeDesc': { ja: 'Mapping List / Memory map から取得', en: 'Source: Mapping List / Memory map', zh: '来源: Mapping List / Memory map', de: 'Quelle: Mapping List / Memory map' },
+    'raw.colSection': { ja: 'セクション', en: 'Section', zh: '段', de: 'Sektion' },
+    'raw.colStartAddr': { ja: 'STARTアドレス', en: 'Start address', zh: '起始地址', de: 'Startadresse' },
+    'raw.colSizeB': { ja: 'サイズ（B）', en: 'Size (B)', zh: '大小 (B)', de: 'Größe (B)' },
+    'raw.colSizeHex': { ja: 'サイズ（hex）', en: 'Size (hex)', zh: '大小 (hex)', de: 'Größe (hex)' },
+    'raw.fileXSecTitle': { ja: 'ファイル × セクション 内訳', en: 'File × Section Breakdown', zh: '文件 × 段 分布', de: 'Datei × Sektion Aufteilung' },
+    'raw.fileXSecDesc': { ja: 'Symbol List / Module 行から取得', en: 'Source: Symbol List / Module rows', zh: '来源: Symbol List / Module 行', de: 'Quelle: Symbol List / Module-Zeilen' },
+    'raw.colFile': { ja: 'ファイル/モジュール', en: 'File / Module', zh: '文件 / 模块', de: 'Datei / Modul' },
 
     // その他
-    'sidebar.buildInfoAria':  { ja: 'ビルド情報', en: 'Build info' },
-    'main.subtitle.overview': { ja: 'ROM使用状況の俯瞰', en: 'ROM Usage Overview' },
-    'device.empty':           { ja: 'mapファイルを投入すると、ここにデバイス情報が表示されます',
-                                  en: 'Device info will appear here once a map file is loaded' },
-    'navcard.raw.title':      { ja: 'rawデータ', en: 'Raw Data' },
+    'sidebar.buildInfoAria': { ja: 'ビルド情報', en: 'Build info', zh: '构建信息', de: 'Build-Info' },
+    'main.subtitle.overview': { ja: 'ROM使用状況の俯瞰', en: 'ROM Usage Overview', zh: 'ROM 使用情况概览', de: 'ROM-Nutzungsübersicht' },
+    'device.empty': { ja: 'mapファイルを投入すると、ここにデバイス情報が表示されます', en: 'Device info will appear here once a map file is loaded', zh: '载入 map 文件后,这里将显示设备信息', de: 'Geräteinfo erscheint hier nach dem Laden einer Map-Datei' },
+    'navcard.raw.title': { ja: 'rawデータ', en: 'Raw Data', zh: '原始数据', de: 'Rohdaten' },
 
     // ====== フェーズ3: JS動的部 ======
     // 入力スロット (動的描画)
-    'slot.parsed':            { ja: '解析済', en: 'Parsed' },
+    'slot.parsed': { ja: '解析済', en: 'Parsed', zh: '已解析', de: 'Geparst' },
 
     // ヘッダ・タブのタイトル/サブタイトル
-    'header.files.title':     { ja: 'ファイル別',     en: 'By File' },
-    'header.files.subtitle':  { ja: '5カテゴリの内訳', en: '5-category breakdown' },
-    'header.memmap.title':    { ja: 'メモリマップ',   en: 'Memory Map' },
-    'header.memmap.subtitle': { ja: 'ROM領域全体のセクション配置', en: 'Section placement across ROM' },
-    'header.raw.subtitle':    { ja: 'パースした生データ', en: 'Raw parsed data' },
-    'header.compare.subtitle':{ ja: '2つのmapファイルの差分', en: 'Diff between 2 map files' },
+    'header.files.title': { ja: 'ファイル別', en: 'By File', zh: '按文件', de: 'Nach Datei' },
+    'header.files.subtitle': { ja: '5カテゴリの内訳', en: '5-category breakdown', zh: '5 类别分布', de: '5-Kategorien-Aufteilung' },
+    'header.memmap.title': { ja: 'メモリマップ', en: 'Memory Map', zh: '内存映射', de: 'Memory-Map' },
+    'header.memmap.subtitle': { ja: 'ROM領域全体のセクション配置', en: 'Section placement across ROM', zh: '整个 ROM 区域的段配置', de: 'Sektionsanordnung im gesamten ROM' },
+    'header.raw.subtitle': { ja: 'パースした生データ', en: 'Raw parsed data', zh: '解析后的原始数据', de: 'Geparste Rohdaten' },
+    'header.compare.subtitle': { ja: '2つのmapファイルの差分', en: 'Diff between 2 map files', zh: '两个 map 文件的差异', de: 'Diff zwischen 2 Map-Dateien' },
 
     // カテゴリラベル (CAT_LABEL)
-    'cat.code':  { ja: 'コード',    en: 'Code' },
-    'cat.const': { ja: '定数',      en: 'Const' },
-    'cat.rfd':   { ja: 'RFD',       en: 'RFD' },
-    'cat.lib':   { ja: 'その他Lib', en: 'Other Lib' },
-    'cat.sys':   { ja: 'システム',  en: 'System' },
+    'cat.code': { ja: 'コード', en: 'Code', zh: '代码', de: 'Code' },
+    'cat.const': { ja: '定数', en: 'Const', zh: '常量', de: 'Konstanten' },
+    'cat.rfd': { ja: 'RFD', en: 'RFD', zh: 'RFD', de: 'RFD' },
+    'cat.lib': { ja: 'その他Lib', en: 'Other Lib', zh: '其他 Lib', de: 'Andere Lib' },
+    'cat.sys': { ja: 'システム', en: 'System', zh: '系统', de: 'System' },
 
     // ROM使用率ステータス
-    'rom.status.ok':     { ja: '余裕あり', en: 'Plenty' },
-    'rom.status.warn':   { ja: '要注意',   en: 'Caution' },
-    'rom.status.danger': { ja: '逼迫',     en: 'Critical' },
+    'rom.status.ok': { ja: '余裕あり', en: 'Plenty', zh: '充裕', de: 'Reichlich' },
+    'rom.status.warn': { ja: '要注意', en: 'Caution', zh: '需注意', de: 'Achtung' },
+    'rom.status.danger': { ja: '逼迫', en: 'Critical', zh: '紧张', de: 'Kritisch' },
 
     // 整合性パネル
-    'integrity.parsed':       { ja: '✓ map解析完了',         en: '✓ Map parsed' },
-    'integrity.matched':      { ja: '✓ Total Section Size と一致',
-                                  en: '✓ Matches Total Section Size' },
-    'integrity.diff':         { ja: '⚠ 差分あり',             en: '⚠ Discrepancy detected' },
-    'integrity.fromMemmap':   { ja: '✓ Memory map から取得', en: '✓ Read from Memory map' },
+    'integrity.parsed': { ja: '✓ map解析完了', en: '✓ Map parsed', zh: '✓ map 解析完成', de: '✓ Map geparst' },
+    'integrity.matched': { ja: '✓ Total Section Size と一致', en: '✓ Matches Total Section Size', zh: '✓ 与 Total Section Size 一致', de: '✓ Stimmt mit Total Section Size überein' },
+    'integrity.diff': { ja: '⚠ 差分あり', en: '⚠ Discrepancy detected', zh: '⚠ 存在差异', de: '⚠ Abweichung erkannt' },
+    'integrity.fromMemmap': { ja: '✓ Memory map から取得', en: '✓ Read from Memory map', zh: '✓ 从 Memory map 取得', de: '✓ Aus Memory map gelesen' },
     // 整合性パネル detail: プレースホルダ方式で1キー1メッセージに統合。
     // 翻訳側が文字列構造を完全に把握できる(語順入れ替え可能)、JS側は I18N.t 一発で完結。
-    'integrity.detail.linkBlockMissing': {
-      ja: '集計: {bytes} B ({hex})\n{block} ブロックがmapファイルに含まれていないため、リンカ報告値との突合は省略',
-      en: 'Total: {bytes} B ({hex})\nMap file lacks {block} block; cross-check with linker report skipped'
-    },
-    'integrity.detail.matched': {
-      ja: '集計: {bytes} B ({hex})\nPROGRAM: {program} B + ROMDATA: {romdata} B',
-      en: 'Total: {bytes} B ({hex})\nPROGRAM: {program} B + ROMDATA: {romdata} B'
-    },
-    'integrity.detail.diff': {
-      ja: '集計: {bytes} B / リンカ: {linkerB} B\n差: {sign}{diff} B',
-      en: 'Total: {bytes} B / Linker: {linkerB} B\nDiff: {sign}{diff} B'
-    },
-    'integrity.detail.fromMemmap': {
-      ja: 'ROM集計: {bytes} B ({hex})\nリンカ報告 Allocate: {alloc}\nセグメント数: {segments}, モジュール数: {modules}',
-      en: 'ROM total: {bytes} B ({hex})\nLinker reported Allocate: {alloc}\nSegments: {segments}, Modules: {modules}'
-    },
+    'integrity.detail.linkBlockMissing': { ja: '集計: {bytes} B ({hex})\n{block} ブロックがmapファイルに含まれていないため、リンカ報告値との突合は省略', en: 'Total: {bytes} B ({hex})\nMap file lacks {block} block; cross-check with linker report skipped', zh: '汇总: {bytes} B ({hex})\nmap 文件中没有 {block} 块,因此跳过与 linker 报告值的比对', de: 'Gesamt: {bytes} B ({hex})\nMap-Datei enthält keinen {block}-Block; Abgleich mit Linker-Report übersprungen' },
+    'integrity.detail.matched': { ja: '集計: {bytes} B ({hex})\nPROGRAM: {program} B + ROMDATA: {romdata} B', en: 'Total: {bytes} B ({hex})\nPROGRAM: {program} B + ROMDATA: {romdata} B', zh: '汇总: {bytes} B ({hex})\nPROGRAM: {program} B + ROMDATA: {romdata} B', de: 'Gesamt: {bytes} B ({hex})\nPROGRAM: {program} B + ROMDATA: {romdata} B' },
+    'integrity.detail.diff': { ja: '集計: {bytes} B / リンカ: {linkerB} B\n差: {sign}{diff} B', en: 'Total: {bytes} B / Linker: {linkerB} B\nDiff: {sign}{diff} B', zh: '汇总: {bytes} B / linker: {linkerB} B\n差: {sign}{diff} B', de: 'Gesamt: {bytes} B / Linker: {linkerB} B\nDiff: {sign}{diff} B' },
+    'integrity.detail.fromMemmap': { ja: 'ROM集計: {bytes} B ({hex})\nリンカ報告 Allocate: {alloc}\nセグメント数: {segments}, モジュール数: {modules}', en: 'ROM total: {bytes} B ({hex})\nLinker reported Allocate: {alloc}\nSegments: {segments}, Modules: {modules}', zh: 'ROM 汇总: {bytes} B ({hex})\nLinker 报告 Allocate: {alloc}\n段数: {segments}, 模块数: {modules}', de: 'ROM gesamt: {bytes} B ({hex})\nLinker Allocate: {alloc}\nSegmente: {segments}, Module: {modules}' },
 
     // 比較不可・警告
-    'compare.cannot':          { ja: '⚠ 比較できません',       en: '⚠ Cannot compare' },
-    'compare.notice':          { ja: 'お知らせ',                en: 'Notice' },
-    'compare.caution':         { ja: '注意',                    en: 'Caution' },
-    'compare.warn.bothNeeded': { ja: '両方のmapファイルが必要です', en: 'Both map files are required' },
-    'compare.warn.compilerMismatch':
-                               { ja: 'コンパイラが異なります（ベース: {base} / 比較先: {target}）。比較できません。',
-                                 en: 'Compiler mismatch (Base: {base} / Target: {target}). Cannot compare.' },
-    'compare.warn.sameName':   { ja: '同じファイル名です（{name}）。違うバージョンのmapを投入したかご確認ください。',
-                                  en: 'Same file name ({name}). Please verify you loaded different versions.' },
-    'compare.info.identical':  { ja: '2つのmapの内容は完全に一致しています。差分はありません。',
-                                  en: 'The two maps are identical. No differences.' },
-    'compare.warn.deviceMismatch':
-                               { ja: 'デバイス名が異なります（ベース: {base} / 比較先: {target}）',
-                                 en: 'Device name differs (Base: {base} / Target: {target})' },
-    'compare.warn.romMismatch':{ ja: 'ROM容量が異なります（ベース: {baseKB}KB / 比較先: {targetKB}KB）',
-                                  en: 'ROM capacity differs (Base: {baseKB}KB / Target: {targetKB}KB)' },
-    'compare.warn.lowCommon':  { ja: '共通ファイル比率: {pct}% — 別プロジェクトの可能性があります。比較結果は参考程度にお願いします。',
-                                  en: 'Common file ratio: {pct}% — Possibly different projects. Treat results as reference only.' },
+    'compare.cannot': { ja: '⚠ 比較できません', en: '⚠ Cannot compare', zh: '⚠ 无法比较', de: '⚠ Vergleich nicht möglich' },
+    'compare.notice': { ja: 'お知らせ', en: 'Notice', zh: '提示', de: 'Hinweis' },
+    'compare.caution': { ja: '注意', en: 'Caution', zh: '注意', de: 'Achtung' },
+    'compare.warn.bothNeeded': { ja: '両方のmapファイルが必要です', en: 'Both map files are required', zh: '需要两个 map 文件', de: 'Beide Map-Dateien werden benötigt' },
+    'compare.warn.compilerMismatch': { ja: 'コンパイラが異なります（ベース: {base} / 比較先: {target}）。比較できません。', en: 'Compiler mismatch (Base: {base} / Target: {target}). Cannot compare.', zh: '编译器不一致 (基准: {base} / 目标: {target})。无法比较。', de: 'Compiler-Mismatch (Basis: {base} / Ziel: {target}). Vergleich nicht möglich.' },
+    'compare.warn.sameName': { ja: '同じファイル名です（{name}）。違うバージョンのmapを投入したかご確認ください。', en: 'Same file name ({name}). Please verify you loaded different versions.', zh: '文件名相同 ({name})。请确认是否载入了不同版本的 map。', de: 'Gleicher Dateiname ({name}). Bitte prüfen, ob unterschiedliche Versionen geladen wurden.' },
+    'compare.info.identical': { ja: '2つのmapの内容は完全に一致しています。差分はありません。', en: 'The two maps are identical. No differences.', zh: '两个 map 内容完全相同,无差异。', de: 'Beide Maps sind identisch. Keine Unterschiede.' },
+    'compare.warn.deviceMismatch': { ja: 'デバイス名が異なります（ベース: {base} / 比較先: {target}）', en: 'Device name differs (Base: {base} / Target: {target})', zh: '设备名称不一致 (基准: {base} / 目标: {target})', de: 'Gerätename unterschiedlich (Basis: {base} / Ziel: {target})' },
+    'compare.warn.romMismatch': { ja: 'ROM容量が異なります（ベース: {baseKB}KB / 比較先: {targetKB}KB）', en: 'ROM capacity differs (Base: {baseKB}KB / Target: {targetKB}KB)', zh: 'ROM 容量不一致 (基准: {baseKB}KB / 目标: {targetKB}KB)', de: 'ROM-Kapazität unterschiedlich (Basis: {baseKB}KB / Ziel: {targetKB}KB)' },
+    'compare.warn.lowCommon': { ja: '共通ファイル比率: {pct}% — 別プロジェクトの可能性があります。比較結果は参考程度にお願いします。', en: 'Common file ratio: {pct}% — Possibly different projects. Treat results as reference only.', zh: '共同文件比率: {pct}% — 可能是不同的项目。比较结果仅供参考。', de: 'Gemeinsamer Dateianteil: {pct}% — Möglicherweise unterschiedliche Projekte. Ergebnis nur als Referenz.' },
 
     // 比較サマリ KPI
-    'compare.kpi.diff':        { ja: '差分',           en: 'Diff' },
-    'compare.kpi.diffSubNoBase': { ja: '比率算出不可（基準=0）', en: 'Cannot compute ratio (base=0)' },
-    'compare.kpi.diffSub':     { ja: '{sign}{pct}% / ベース',   en: '{sign}{pct}% / Base' },
-    'compare.kpi.changedFiles':{ ja: '変化したファイル',  en: 'Changed Files' },
-    'compare.kpi.addedRemoved':{ ja: '追加 / 削除',       en: 'Added / Removed' },
-    'compare.kpi.addedRemovedSub': { ja: '新規追加 / ベースのみ', en: 'New / Base only' },
-    'compare.kpi.commonRatio': { ja: '共通ファイル比率', en: 'Common Ratio' },
-    'compare.label.base':      { ja: 'ベース',   en: 'Base' },
-    'compare.label.target':    { ja: '比較先',   en: 'Target' },
-    'compare.notLoaded':       { ja: '未投入',   en: 'Not loaded' },
+    'compare.kpi.diff': { ja: '差分', en: 'Diff', zh: '差异', de: 'Diff' },
+    'compare.kpi.diffSubNoBase': { ja: '比率算出不可（基準=0）', en: 'Cannot compute ratio (base=0)', zh: '无法计算比率 (基准=0)', de: 'Verhältnis nicht berechenbar (Basis=0)' },
+    'compare.kpi.diffSub': { ja: '{sign}{pct}% / ベース', en: '{sign}{pct}% / Base', zh: '{sign}{pct}% / 基准', de: '{sign}{pct}% / Basis' },
+    'compare.kpi.changedFiles': { ja: '変化したファイル', en: 'Changed Files', zh: '已变更的文件', de: 'Geänderte Dateien' },
+    'compare.kpi.addedRemoved': { ja: '追加 / 削除', en: 'Added / Removed', zh: '新增 / 删除', de: 'Hinzu / Entfernt' },
+    'compare.kpi.addedRemovedSub': { ja: '新規追加 / ベースのみ', en: 'New / Base only', zh: '新增 / 仅基准', de: 'Neu / Nur Basis' },
+    'compare.kpi.commonRatio': { ja: '共通ファイル比率', en: 'Common Ratio', zh: '共同文件比率', de: 'Gemeinsamer Anteil' },
+    'compare.label.base': { ja: 'ベース', en: 'Base', zh: '基准', de: 'Basis' },
+    'compare.label.target': { ja: '比較先', en: 'Target', zh: '目标', de: 'Ziel' },
+    'compare.notLoaded': { ja: '未投入', en: 'Not loaded', zh: '未载入', de: 'Nicht geladen' },
 
     // ファイル別 上位バー (topbars)
-    'topbars.empty':           { ja: '条件に一致するファイルがありません', en: 'No files match the criteria' },
-    'topbars.totalAll':        { ja: '全 {n} ファイル', en: 'All {n} files' },
-    'topbars.totalShown':      { ja: '{shown} / {total} ファイル', en: '{shown} / {total} files' },
+    'topbars.empty': { ja: '条件に一致するファイルがありません', en: 'No files match the criteria', zh: '没有匹配条件的文件', de: 'Keine Datei entspricht den Kriterien' },
+    'topbars.totalAll': { ja: '全 {n} ファイル', en: 'All {n} files', zh: '共 {n} 文件', de: 'Insgesamt {n} Dateien' },
+    'topbars.totalShown': { ja: '{shown} / {total} ファイル', en: '{shown} / {total} files', zh: '{shown} / {total} 文件', de: '{shown} / {total} Dateien' },
 
     // メモリマップ
-    'memmap.row.summary':      { ja: '1行 = {row} · 全{rows}行{auto} · Alt+ホイールで拡縮',
-                                  en: '1 row = {row} · {rows} rows total{auto} · Alt+wheel to zoom' },
-    'memmap.row.autoSuffix':   { ja: '（自動）', en: ' (auto)' },
-    'memmap.placement.list.all': { ja: 'アドレス順 · 全 {n} 件', en: 'Sorted by address · {n} total' },
-    'memmap.placement.list.filtered': {
-      ja: 'アドレス順 · {shown} / {total} 件（"{q}"で絞り込み中）',
-      en: 'Sorted by address · {shown} / {total} ({q})' },
-    'memmap.legend.unused':    { ja: 'どのセクションにも配置されていない、未使用の物理ROMアドレス範囲',
-                                  en: 'Unused physical ROM range not assigned to any section' },
-    'memmap.legend.mirror':    { ja: 'ミラー元領域', en: 'Mirror source region' },
-    'memmap.legend.mirrorTip': { ja: 'ハードウェアミラー機能でF領域(0xF????)からも読める物理ROMの範囲',
-                                  en: 'Physical ROM range also readable from F-region (0xF????) via hardware mirror' },
-    'memmap.pin.close':        { ja: '閉じる (Esc)', en: 'Close (Esc)' },
-    'memmap.free.title':       { ja: '空き領域',  en: 'Free space' },
-    'memmap.free.meta':        { ja: '未使用 (Free)', en: 'Unused (Free)' },
-    'memmap.gapFile':          { ja: '(空き領域)', en: '(Free)' },
+    'memmap.row.summary': { ja: '1行 = {row} · 全{rows}行{auto} · Alt+ホイールで拡縮', en: '1 row = {row} · {rows} rows total{auto} · Alt+wheel to zoom', zh: '1 行 = {row} · 共 {rows} 行{auto} · 按 Alt+滚轮缩放', de: '1 Zeile = {row} · {rows} Zeilen{auto} · Alt+Mausrad zum Zoomen' },
+    'memmap.row.autoSuffix': { ja: '（自動）', en: ' (auto)', zh: ' (自动)', de: ' (Auto)' },
+    'memmap.placement.list.all': { ja: 'アドレス順 · 全 {n} 件', en: 'Sorted by address · {n} total', zh: '按地址排序 · 共 {n} 项', de: 'Nach Adresse sortiert · {n} Einträge' },
+    'memmap.placement.list.filtered': { ja: 'アドレス順 · {shown} / {total} 件（"{q}"で絞り込み中）', en: 'Sorted by address · {shown} / {total} ({q})', zh: '按地址排序 · {shown} / {total} 项 (筛选: "{q}")', de: 'Nach Adresse sortiert · {shown} / {total} ({q})' },
+    'memmap.legend.unused': { ja: 'どのセクションにも配置されていない、未使用の物理ROMアドレス範囲', en: 'Unused physical ROM range not assigned to any section', zh: '未分配给任何段的未使用物理 ROM 地址范围', de: 'Ungenutzter physischer ROM-Bereich, keiner Sektion zugewiesen' },
+    'memmap.legend.mirror': { ja: 'ミラー元領域', en: 'Mirror source region', zh: '镜像源区域', de: 'Mirror-Quellbereich' },
+    'memmap.legend.mirrorTip': { ja: 'ハードウェアミラー機能でF領域(0xF????)からも読める物理ROMの範囲', en: 'Physical ROM range also readable from F-region (0xF????) via hardware mirror', zh: '通过硬件镜像功能,也可从 F 区域 (0xF????) 读取的物理 ROM 范围', de: 'Physischer ROM-Bereich, der per Hardware-Mirror auch aus F-Bereich (0xF????) lesbar ist' },
+    'memmap.pin.close': { ja: '閉じる (Esc)', en: 'Close (Esc)', zh: '关闭 (Esc)', de: 'Schließen (Esc)' },
+    'memmap.free.title': { ja: '空き領域', en: 'Free space', zh: '空闲区域', de: 'Freier Bereich' },
+    'memmap.free.meta': { ja: '未使用 (Free)', en: 'Unused (Free)', zh: '未使用 (Free)', de: 'Ungenutzt (Free)' },
+    'memmap.gapFile': { ja: '(空き領域)', en: '(Free)', zh: '(空闲区域)', de: '(Frei)' },
 
     // ====== フェーズ3 追加分: 漏れ補修 ======
     // ファイル名コピーボタン
-    'slot.copyFileName':       { ja: 'ファイル名をコピー', en: 'Copy file name' },
+    'slot.copyFileName': { ja: 'ファイル名をコピー', en: 'Copy file name', zh: '复制文件名', de: 'Dateiname kopieren' },
 
     // (推定) バッジ
-    'badge.estimated':         { ja: '(推定)', en: '(estimated)' },
-    'badge.none':              { ja: 'なし',  en: 'None' },
+    'badge.estimated': { ja: '(推定)', en: '(estimated)', zh: '(估计)', de: '(geschätzt)' },
+    'badge.none': { ja: 'なし', en: 'None', zh: '无', de: 'Keine' },
 
     // 比較タブの差分バケットチップ
-    'compare.bucket.all':       { ja: 'すべて',     en: 'All' },
-    'compare.bucket.changed':   { ja: '変化あり',   en: 'Changed' },
-    'compare.bucket.up':        { ja: '▲ 増加',    en: '▲ Increased' },
-    'compare.bucket.down':      { ja: '▼ 減少',    en: '▼ Decreased' },
-    'compare.bucket.added':     { ja: '+ 追加',    en: '+ Added' },
-    'compare.bucket.removed':   { ja: '- 削除',    en: '- Removed' },
-    'compare.bucket.unchanged': { ja: '= 変化なし', en: '= Unchanged' },
+    'compare.bucket.all': { ja: 'すべて', en: 'All', zh: '全部', de: 'Alle' },
+    'compare.bucket.changed': { ja: '変化あり', en: 'Changed', zh: '有变更', de: 'Geändert' },
+    'compare.bucket.up': { ja: '▲ 増加', en: '▲ Increased', zh: '▲ 增加', de: '▲ Vergrößert' },
+    'compare.bucket.down': { ja: '▼ 減少', en: '▼ Decreased', zh: '▼ 减少', de: '▼ Verkleinert' },
+    'compare.bucket.added': { ja: '+ 追加', en: '+ Added', zh: '+ 新增', de: '+ Hinzu' },
+    'compare.bucket.removed': { ja: '- 削除', en: '- Removed', zh: '- 删除', de: '- Entfernt' },
+    'compare.bucket.unchanged': { ja: '= 変化なし', en: '= Unchanged', zh: '= 无变化', de: '= Unverändert' },
 
     // 比較タブ CSV出力ボタンの拡張版title
-    'compare.csvBtnTipFull':   { ja: '差分をCSVで出力（フィルタ反映、容量大きい順）',
-                                   en: 'Export diff as CSV (filter applied, sorted by size desc)' },
+    'compare.csvBtnTipFull': { ja: '差分をCSVで出力（フィルタ反映、容量大きい順）', en: 'Export diff as CSV (filter applied, sorted by size desc)', zh: '将差异导出为 CSV (反映筛选,按容量降序)', de: 'Diff als CSV exportieren (Filter aktiv, nach Größe absteigend)' },
 
     // 比較タブのファイル別差分カードヘッダ
-    'compare.diffByFile.title':     { ja: 'ファイル別差分',     en: 'By-File Diff' },
-    'compare.diffByFile.subtitle':  { ja: 'バケットでフィルタ可', en: 'Filter by bucket' },
+    'compare.diffByFile.title': { ja: 'ファイル別差分', en: 'By-File Diff', zh: '按文件差异', de: 'Diff nach Datei' },
+    'compare.diffByFile.subtitle': { ja: 'バケットでフィルタ可', en: 'Filter by bucket', zh: '可按桶筛选', de: 'Nach Bucket filterbar' },
 
     // 比較タブのテーブル列ヘッダ
-    'compare.col.category':  { ja: 'カテゴリ',  en: 'Category' },
-    'compare.col.base':      { ja: 'ベース',    en: 'Base' },
-    'compare.col.target':    { ja: '比較先',    en: 'Target' },
-    'compare.col.diff':      { ja: '差分',      en: 'Diff' },
-    'compare.col.fileName':  { ja: 'ファイル名', en: 'File name' },
+    'compare.col.category': { ja: 'カテゴリ', en: 'Category', zh: '类别', de: 'Kategorie' },
+    'compare.col.base': { ja: 'ベース', en: 'Base', zh: '基准', de: 'Basis' },
+    'compare.col.target': { ja: '比較先', en: 'Target', zh: '目标', de: 'Ziel' },
+    'compare.col.diff': { ja: '差分', en: 'Diff', zh: '差异', de: 'Diff' },
+    'compare.col.fileName': { ja: 'ファイル名', en: 'File name', zh: '文件名', de: 'Dateiname' },
 
     // ミラー領域カードのMAA推定情報
-    'mirror.maaEstimated':   { ja: 'マップから MAA={bank} と推定',
-                                 en: 'MAA={bank} estimated from map' },
+    'mirror.maaEstimated': { ja: 'マップから MAA={bank} と推定', en: 'MAA={bank} estimated from map', zh: '从 map 推断 MAA={bank}', de: 'MAA={bank} aus Map geschätzt' },
 
     // 入力スロットemptyテキスト (動的)
-    'slot.empty.btn.B':        { ja: 'ボタンから選択（比較タブ用）', en: 'Click button (for Compare tab)' },
-    'slot.empty.btn.A':        { ja: 'ボタンから選択', en: 'Click button to select' },
-    'slot.empty.drop.B':       { ja: 'ここにドロップで比較タブが有効化', en: 'Drop here to enable Compare tab' },
-    'slot.empty.drop.A':       { ja: 'ここにドロップ', en: 'Drop here' },
-    'slot.empty.mobile':       { ja: 'ボタンから選択してください', en: 'Please select via button' },
-    'slot.empty.both':         { ja: 'ここにドロップ または ボタンから選択', en: 'Drop here or click button' },
+    'slot.empty.btn.B': { ja: 'ボタンから選択（比較タブ用）', en: 'Click button (for Compare tab)', zh: '点击按钮选择 (用于比较页)', de: 'Per Button wählen (für Vergleich)' },
+    'slot.empty.btn.A': { ja: 'ボタンから選択', en: 'Click button to select', zh: '点击按钮选择', de: 'Per Button wählen' },
+    'slot.empty.drop.B': { ja: 'ここにドロップで比較タブが有効化', en: 'Drop here to enable Compare tab', zh: '拖放至此处启用比较页', de: 'Hier ablegen, um Vergleich zu aktivieren' },
+    'slot.empty.drop.A': { ja: 'ここにドロップ', en: 'Drop here', zh: '拖放至此处', de: 'Hier ablegen' },
+    'slot.empty.mobile': { ja: 'ボタンから選択してください', en: 'Please select via button', zh: '请通过按钮选择', de: 'Bitte per Button auswählen' },
+    'slot.empty.both': { ja: 'ここにドロップ または ボタンから選択', en: 'Drop here or click button', zh: '拖放至此处或点击按钮', de: 'Hier ablegen oder Button klicken' },
 
     // デバイスバー
-    'device.romEstimated':     { ja: '(推定)', en: '(estimated)' },
-    'device.romNone':          { ja: 'なし',   en: 'None' },
-    'device.romCap.notFound':  { ja: '-', en: '-' },
-    'device.label.device':     { ja: 'デバイス',   en: 'Device' },
-    'device.label.series':     { ja: 'シリーズ',   en: 'Series' },
-    'device.label.compiler':   { ja: 'コンパイラ', en: 'Compiler' },
-    'device.label.mirror':     { ja: 'ミラー',     en: 'Mirror' },
-    'device.label.file':       { ja: 'ファイル',   en: 'File' },
+    'device.romEstimated': { ja: '(推定)', en: '(estimated)', zh: '(估计)', de: '(geschätzt)' },
+    'device.romNone': { ja: 'なし', en: 'None', zh: '无', de: 'Keine' },
+    'device.romCap.notFound': { ja: '-', en: '-', zh: '-', de: '-' },
+    'device.label.device': { ja: 'デバイス', en: 'Device', zh: '设备', de: 'Gerät' },
+    'device.label.series': { ja: 'シリーズ', en: 'Series', zh: '系列', de: 'Serie' },
+    'device.label.compiler': { ja: 'コンパイラ', en: 'Compiler', zh: '编译器', de: 'Compiler' },
+    'device.label.mirror': { ja: 'ミラー', en: 'Mirror', zh: '镜像', de: 'Mirror' },
+    'device.label.file': { ja: 'ファイル', en: 'File', zh: '文件', de: 'Datei' },
 
     // KPI ラベル
-    'kpi.romCapacity':         { ja: 'ROM容量',   en: 'ROM Capacity' },
-    'kpi.used':                { ja: '使用量',    en: 'Used' },
-    'kpi.usageRate':           { ja: '使用率',    en: 'Usage' },
-    'kpi.remaining':           { ja: '残量',      en: 'Remaining' },
+    'kpi.romCapacity': { ja: 'ROM容量', en: 'ROM Capacity', zh: 'ROM 容量', de: 'ROM-Größe' },
+    'kpi.used': { ja: '使用量', en: 'Used', zh: '已使用', de: 'Verbraucht' },
+    'kpi.usageRate': { ja: '使用率', en: 'Usage', zh: '使用率', de: 'Auslastung' },
+    'kpi.remaining': { ja: '残量', en: 'Remaining', zh: '剩余', de: 'Verbleibend' },
 
     // ミラーカード
-    'mirror.title':            { ja: 'ミラー領域情報', en: 'Mirror Area' },
-    'mirror.cardSubtitle':     { ja: '{series} {kb}KB品のハードウェアミラー領域', en: 'HW mirror area for {series} {kb}KB' },
-    'mirror.available':        { ja: 'ミラー機能あり', en: 'Mirror Available' },
-    'mirror.none':             { ja: 'ミラー機能なし', en: 'No Mirror' },
-    'mirror.label.area':       { ja: '領域',     en: 'Area' },
-    'mirror.label.size':       { ja: 'サイズ',   en: 'Size' },
-    'mirror.label.dfMirror':   { ja: 'DFミラー', en: 'DF Mirror' },
-    'mirror.label.source':     { ja: 'ミラー元', en: 'Source' },
-    'mirror.label.desc':       { ja: '説明',     en: 'Description' },
-    'mirror.noneDesc':         { ja: 'このデバイスはハードウェアミラー機能を持ちません。F領域(0xF0000-0xFFFFF)へのセクション配置は集計対象外となります。',
-                                   en: 'This device has no hardware mirror. Sections placed in F-area (0xF0000-0xFFFFF) are excluded from aggregation.' },
-    'mirror.note':             { ja: '※ ミラー領域はROM容量とは独立した存在で、ROM使用率には含まれません。',
-                                   en: '* The mirror area is independent of ROM capacity and is not included in the ROM usage rate.' },
+    'mirror.title': { ja: 'ミラー領域情報', en: 'Mirror Area', zh: '镜像区域信息', de: 'Mirror-Bereich' },
+    'mirror.cardSubtitle': { ja: '{series} {kb}KB品のハードウェアミラー領域', en: 'HW mirror area for {series} {kb}KB', zh: '{series} {kb}KB 型号的硬件镜像区域', de: 'HW-Mirror-Bereich für {series} {kb}KB' },
+    'mirror.available': { ja: 'ミラー機能あり', en: 'Mirror Available', zh: '支持镜像', de: 'Mirror verfügbar' },
+    'mirror.none': { ja: 'ミラー機能なし', en: 'No Mirror', zh: '不支持镜像', de: 'Kein Mirror' },
+    'mirror.label.area': { ja: '領域', en: 'Area', zh: '区域', de: 'Bereich' },
+    'mirror.label.size': { ja: 'サイズ', en: 'Size', zh: '大小', de: 'Größe' },
+    'mirror.label.dfMirror': { ja: 'DFミラー', en: 'DF Mirror', zh: 'DF 镜像', de: 'DF-Mirror' },
+    'mirror.label.source': { ja: 'ミラー元', en: 'Source', zh: '镜像源', de: 'Quelle' },
+    'mirror.label.desc': { ja: '説明', en: 'Description', zh: '说明', de: 'Beschreibung' },
+    'mirror.noneDesc': { ja: 'このデバイスはハードウェアミラー機能を持ちません。F領域(0xF0000-0xFFFFF)へのセクション配置は集計対象外となります。', en: 'This device has no hardware mirror. Sections placed in F-area (0xF0000-0xFFFFF) are excluded from aggregation.', zh: '此设备不支持硬件镜像功能。F 区域 (0xF0000-0xFFFFF) 中的段配置不计入汇总。', de: 'Dieses Gerät hat keinen Hardware-Mirror. Sektionen im F-Bereich (0xF0000-0xFFFFF) werden nicht aggregiert.' },
+    'mirror.note': { ja: '※ ミラー領域はROM容量とは独立した存在で、ROM使用率には含まれません。', en: '* The mirror area is independent of ROM capacity and is not included in the ROM usage rate.', zh: '※ 镜像区域独立于 ROM 容量,不计入 ROM 使用率。', de: '* Der Mirror-Bereich ist unabhängig von der ROM-Kapazität und nicht in der Auslastung enthalten.' },
 
     // ドーナツ / 凡例
-    'donut.empty':             { ja: 'データなし', en: 'No data' },
-    'memmap.legend.free':      { ja: '空き領域', en: 'Free area' },
+    'donut.empty': { ja: 'データなし', en: 'No data', zh: '无数据', de: 'Keine Daten' },
+    'memmap.legend.free': { ja: '空き領域', en: 'Free area', zh: '空闲区域', de: 'Freier Bereich' },
 
     // 整合性パネル(比較関連)
-    'integrity.cannotCompare': { ja: '⚠ 比較不可',     en: '⚠ Cannot compare' },
-    'integrity.compareDone':   { ja: '比較完了',       en: 'Compare done' },
-    'integrity.diffSummary':   { ja: '差分: {sign}{n} B ({pct})', en: 'Diff: {sign}{n} B ({pct})' },
+    'integrity.cannotCompare': { ja: '⚠ 比較不可', en: '⚠ Cannot compare', zh: '⚠ 无法比较', de: '⚠ Vergleich nicht möglich' },
+    'integrity.compareDone': { ja: '比較完了', en: 'Compare done', zh: '比较完成', de: 'Vergleich fertig' },
+    'integrity.diffSummary': { ja: '差分: {sign}{n} B ({pct})', en: 'Diff: {sign}{n} B ({pct})', zh: '差异: {sign}{n} B ({pct})', de: 'Diff: {sign}{n} B ({pct})' },
 
     // 比較画面 (空状態)
-    'compare.empty.title':     { ja: '比較する2つのmapファイルを投入してください', en: 'Please load two map files to compare' },
-    'compare.empty.base':      { ja: 'ベース',     en: 'Base' },
-    'compare.empty.target':    { ja: '比較先',     en: 'Target' },
+    'compare.empty.title': { ja: '比較する2つのmapファイルを投入してください', en: 'Please load two map files to compare', zh: '请载入两个 map 文件以进行比较', de: 'Bitte zwei Map-Dateien zum Vergleich laden' },
+    'compare.empty.base': { ja: 'ベース', en: 'Base', zh: '基准', de: 'Basis' },
+    'compare.empty.target': { ja: '比較先', en: 'Target', zh: '目标', de: 'Ziel' },
 
     // 比較画面 (カード)
-    'compare.byCat.title':     { ja: 'カテゴリ別差分', en: 'Diff by Category' },
-    'compare.byCat.subtitle':  { ja: '5カテゴリそれぞれの増減', en: 'Increase/decrease for each of 5 categories' },
+    'compare.byCat.title': { ja: 'カテゴリ別差分', en: 'Diff by Category', zh: '按类别差异', de: 'Diff nach Kategorie' },
+    'compare.byCat.subtitle': { ja: '5カテゴリそれぞれの増減', en: 'Increase/decrease for each of 5 categories', zh: '5 类别各自的增减', de: 'Zu-/Abnahme der 5 Kategorien' },
 
     // 比較タブ有効化トースト
-    'toast.compareReady.text':   { ja: '比較タブが有効になりました', en: 'Compare tab is now enabled' },
-    'toast.compareReady.action': { ja: 'クリックで開く',          en: 'Click to open' },
+    'toast.compareReady.text': { ja: '比較タブが有効になりました', en: 'Compare tab is now enabled', zh: '比较页已启用', de: 'Vergleichs-Tab ist nun aktiviert' },
+    'toast.compareReady.action': { ja: 'クリックで開く', en: 'Click to open', zh: '点击打开', de: 'Klicken zum Öffnen' },
 
     // スロット (再投入/クリア/ファイル数)
-    'slot.reload':             { ja: '📁 別のファイル',  en: '📁 Choose another' },
-    'slot.clear':              { ja: 'クリア',          en: 'Clear' },
-    'slot.fileCount':          { ja: '{n} ファイル',    en: '{n} files' },
-    'slot.select':             { ja: '📁 ファイルを選択', en: '📁 Choose File' },
+    'slot.reload': { ja: '📁 別のファイル', en: '📁 Choose another', zh: '📁 选择其他文件', de: '📁 Andere Datei' },
+    'slot.clear': { ja: 'クリア', en: 'Clear', zh: '清除', de: 'Zurücksetzen' },
+    'slot.fileCount': { ja: '{n} ファイル', en: '{n} files', zh: '{n} 文件', de: '{n} Dateien' },
+    'slot.select': { ja: '📁 ファイルを選択', en: '📁 Choose File', zh: '📁 选择文件', de: '📁 Datei wählen' },
 
     // CSVエクスポートボタン
-    'compare.csvBtnTip':       { ja: '差分をCSVで出力（フィルタ反映）', en: 'Export diff as CSV (filter applied)' },
+    'compare.csvBtnTip': { ja: '差分をCSVで出力（フィルタ反映）', en: 'Export diff as CSV (filter applied)', zh: '将差异导出为 CSV (反映筛选)', de: 'Diff als CSV exportieren (Filter aktiv)' },
 
     // エラーメッセージ
-    'error.notMapFile':        { ja: 'mapファイル（.map / .map.txt / .lis）を投入してください。受け取ったファイル: {name}',
-                                   en: 'Please load a map file (.map / .map.txt / .lis). Received: {name}' },
-    'error.tooLarge':          { ja: 'ファイルサイズが大きすぎます（{mb} MB）。{maxMb}MB以下にしてください。',
-                                   en: 'File too large ({mb} MB). Please use {maxMb} MB or less.' },
-    'error.unknownSlot':       { ja: '内部エラー: 未定義のスロット \'{slot}\'',
-                                   en: 'Internal error: undefined slot \'{slot}\'' },
-    'error.parseTitle':        { ja: 'mapファイルの解析に失敗しました。',
-                                   en: 'Failed to parse the map file.' },
-    'error.parseFile':         { ja: 'ファイル: {name}', en: 'File: {name}' },
-    'error.parseDetail':       { ja: 'エラー: {detail}', en: 'Error: {detail}' },
-    'error.parseHints':        { ja: '※ 考えられる原因:\n  ・対応していないコンパイラ(現状CC-RL/CA78K0Rのみ対応)\n  ・mapファイルが破損している/中身が空\n  ・特殊な文字コード(UTF-8/Shift_JIS以外)',
-                                   en: '* Possible causes:\n  - Unsupported compiler (currently CC-RL / CA78K0R only)\n  - Map file is corrupt or empty\n  - Unusual encoding (other than UTF-8 / Shift_JIS)' },
-    'error.readTitle':         { ja: 'ファイルの読み込みに失敗しました。',
-                                   en: 'Failed to read the file.' },
-    'error.readHints':         { ja: '※ ファイルが破損していないか、アクセス権があるかをご確認ください。',
-                                   en: '* Please check the file is not corrupt and you have access to it.' },
-    'error.readAborted':       { ja: 'ファイル読み込みが中断されました（{name}）。再度お試しください。',
-                                   en: 'File reading was aborted ({name}). Please try again.' },
-    'error.detailUnknown':     { ja: '(詳細不明)', en: '(unknown details)' },
-    'error.deviceNotFound':    { ja: 'デバイス名がmapファイル中から取得できませんでした',
-                                   en: 'Device name not found in the map file' },
+    'error.notMapFile': { ja: 'mapファイル（.map / .map.txt / .lis）を投入してください。受け取ったファイル: {name}', en: 'Please load a map file (.map / .map.txt / .lis). Received: {name}', zh: '请载入 map 文件 (.map / .map.txt / .lis)。收到的文件: {name}', de: 'Bitte eine Map-Datei laden (.map / .map.txt / .lis). Erhalten: {name}' },
+    'error.tooLarge': { ja: 'ファイルサイズが大きすぎます（{mb} MB）。{maxMb}MB以下にしてください。', en: 'File too large ({mb} MB). Please use {maxMb} MB or less.', zh: '文件过大 ({mb} MB)。请使用 {maxMb}MB 以下的文件。', de: 'Datei zu groß ({mb} MB). Bitte {maxMb} MB oder weniger verwenden.' },
+    'error.unknownSlot': { ja: '内部エラー: 未定義のスロット \'{slot}\'', en: 'Internal error: undefined slot \'{slot}\'', zh: '内部错误: 未定义的槽位 \'{slot}\'', de: 'Interner Fehler: undefinierter Slot \'{slot}\'' },
+    'error.parseTitle': { ja: 'mapファイルの解析に失敗しました。', en: 'Failed to parse the map file.', zh: 'map 文件解析失败。', de: 'Parsen der Map-Datei fehlgeschlagen.' },
+    'error.parseFile': { ja: 'ファイル: {name}', en: 'File: {name}', zh: '文件: {name}', de: 'Datei: {name}' },
+    'error.parseDetail': { ja: 'エラー: {detail}', en: 'Error: {detail}', zh: '错误: {detail}', de: 'Fehler: {detail}' },
+    'error.parseHints': { ja: '※ 考えられる原因:\n  ・対応していないコンパイラ(現状CC-RL/CA78K0Rのみ対応)\n  ・mapファイルが破損している/中身が空\n  ・特殊な文字コード(UTF-8/Shift_JIS以外)', en: '* Possible causes:\n  - Unsupported compiler (currently CC-RL / CA78K0R only)\n  - Map file is corrupt or empty\n  - Unusual encoding (other than UTF-8 / Shift_JIS)', zh: '※ 可能原因:\n  ・不支持的编译器 (目前仅支持 CC-RL/CA78K0R)\n  ・map 文件损坏/为空\n  ・特殊编码 (除 UTF-8/Shift_JIS 之外)', de: '* Mögliche Ursachen:\n  - Nicht unterstützter Compiler (aktuell nur CC-RL / CA78K0R)\n  - Map-Datei beschädigt oder leer\n  - Ungewöhnliche Kodierung (außer UTF-8 / Shift_JIS)' },
+    'error.readTitle': { ja: 'ファイルの読み込みに失敗しました。', en: 'Failed to read the file.', zh: '文件读取失败。', de: 'Lesen der Datei fehlgeschlagen.' },
+    'error.readHints': { ja: '※ ファイルが破損していないか、アクセス権があるかをご確認ください。', en: '* Please check the file is not corrupt and you have access to it.', zh: '※ 请确认文件未损坏且具有访问权限。', de: '* Bitte prüfen, ob die Datei unbeschädigt ist und Sie Zugriff haben.' },
+    'error.readAborted': { ja: 'ファイル読み込みが中断されました（{name}）。再度お試しください。', en: 'File reading was aborted ({name}). Please try again.', zh: '文件读取已中断 ({name})。请重试。', de: 'Lesen der Datei wurde abgebrochen ({name}). Bitte erneut versuchen.' },
+    'error.detailUnknown': { ja: '(詳細不明)', en: '(unknown details)', zh: '(详情未知)', de: '(unbekannte Details)' },
+    'error.deviceNotFound': { ja: 'デバイス名がmapファイル中から取得できませんでした', en: 'Device name not found in the map file', zh: '无法从 map 文件中获取设备名称', de: 'Gerätename in der Map-Datei nicht gefunden' },
 
     // パーサ系エラー
-    'parser.unknownFormat':    { ja: 'mapファイルの形式を判別できませんでした。\n本ツールは現在 CC-RL / CA78K0R に対応しています。\n\nファイル: {name}\n先頭の内容（参考）:\n  {head}\n\n※ CC-RL は "Renesas Optimizing Linker"、CA78K0R は "78K0R Linker" の文字列が冒頭にあります。',
-                                   en: 'Could not detect map file format.\nThis tool currently supports CC-RL / CA78K0R.\n\nFile: {name}\nLeading content (preview):\n  {head}\n\n* CC-RL maps start with "Renesas Optimizing Linker", CA78K0R maps with "78K0R Linker".' },
-    'parser.notImplemented':   { ja: '{compiler} のmapファイルとして検出されましたが、現在パーサが未実装です。\n本ツールは現在 CC-RL / CA78K0R に対応しています。{compiler} 対応は将来追加予定です。\n\nファイル: {name}',
-                                   en: 'Detected as {compiler} map, but parser is not yet implemented.\nThis tool currently supports CC-RL / CA78K0R. {compiler} support is planned.\n\nFile: {name}' },
-    'parser.internalNoParser': { ja: '内部エラー: {compiler} のパーサが見つかりません。',
-                                   en: 'Internal error: parser for {compiler} not found.' },
-    'parser.parseFailedTitle': { ja: '{compiler} mapファイルの解析中にエラーが発生しました。',
-                                   en: 'An error occurred while parsing {compiler} map file.' },
-    'parser.parseFailedDevice':{ ja: 'デバイス: {device}', en: 'Device: {device}' },
-    'parser.parseFailedHint':  { ja: 'mapファイルが破損していないか、想定外の形式になっていないか確認してください。',
-                                   en: 'Please check the map file is not corrupt and has expected format.' },
-    'parser.deviceNotDetected':{ ja: '(未検出)', en: '(not detected)' },
-    'parser.headEmpty':        { ja: '(空)', en: '(empty)' },
+    'parser.unknownFormat': { ja: 'mapファイルの形式を判別できませんでした。\n本ツールは現在 CC-RL / CA78K0R に対応しています。\n\nファイル: {name}\n先頭の内容（参考）:\n  {head}\n\n※ CC-RL は "Renesas Optimizing Linker"、CA78K0R は "78K0R Linker" の文字列が冒頭にあります。', en: 'Could not detect map file format.\nThis tool currently supports CC-RL / CA78K0R.\n\nFile: {name}\nLeading content (preview):\n  {head}\n\n* CC-RL maps start with "Renesas Optimizing Linker", CA78K0R maps with "78K0R Linker".', zh: '无法识别 map 文件格式。\n本工具目前支持 CC-RL / CA78K0R。\n\n文件: {name}\n文件开头 (参考):\n  {head}\n\n※ CC-RL 开头有 "Renesas Optimizing Linker", CA78K0R 开头有 "78K0R Linker"。', de: 'Map-Format konnte nicht erkannt werden.\nDieses Werkzeug unterstützt aktuell CC-RL / CA78K0R.\n\nDatei: {name}\nDateianfang (Vorschau):\n  {head}\n\n* CC-RL-Maps beginnen mit "Renesas Optimizing Linker", CA78K0R mit "78K0R Linker".' },
+    'parser.notImplemented': { ja: '{compiler} のmapファイルとして検出されましたが、現在パーサが未実装です。\n本ツールは現在 CC-RL / CA78K0R に対応しています。{compiler} 対応は将来追加予定です。\n\nファイル: {name}', en: 'Detected as {compiler} map, but parser is not yet implemented.\nThis tool currently supports CC-RL / CA78K0R. {compiler} support is planned.\n\nFile: {name}', zh: '检测为 {compiler} 的 map,但解析器尚未实现。\n本工具目前支持 CC-RL / CA78K0R。{compiler} 的支持计划在将来添加。\n\n文件: {name}', de: 'Als {compiler}-Map erkannt, Parser jedoch noch nicht implementiert.\nDieses Werkzeug unterstützt aktuell CC-RL / CA78K0R. {compiler}-Unterstützung ist geplant.\n\nDatei: {name}' },
+    'parser.internalNoParser': { ja: '内部エラー: {compiler} のパーサが見つかりません。', en: 'Internal error: parser for {compiler} not found.', zh: '内部错误: 找不到 {compiler} 的解析器。', de: 'Interner Fehler: Parser für {compiler} nicht gefunden.' },
+    'parser.parseFailedTitle': { ja: '{compiler} mapファイルの解析中にエラーが発生しました。', en: 'An error occurred while parsing {compiler} map file.', zh: '解析 {compiler} map 文件时发生错误。', de: 'Beim Parsen der {compiler}-Map-Datei ist ein Fehler aufgetreten.' },
+    'parser.parseFailedDevice': { ja: 'デバイス: {device}', en: 'Device: {device}', zh: '设备: {device}', de: 'Gerät: {device}' },
+    'parser.parseFailedHint': { ja: 'mapファイルが破損していないか、想定外の形式になっていないか確認してください。', en: 'Please check the map file is not corrupt and has expected format.', zh: '请确认 map 文件未损坏,且格式符合预期。', de: 'Bitte prüfen, ob die Map-Datei unbeschädigt ist und das erwartete Format hat.' },
+    'parser.deviceNotDetected': { ja: '(未検出)', en: '(not detected)', zh: '(未检测到)', de: '(nicht erkannt)' },
+    'parser.headEmpty': { ja: '(空)', en: '(empty)', zh: '(空)', de: '(leer)' },
 
     // ミラー・バンク
-    'parser.mirrorBankMix':    { ja: '{name} セクションが下位/上位バンク両方に配置されています。ミラー元領域の表示は最初に検出されたバンク(bank={bank})のみを反映しています。',
-                                   en: 'Section {name} is placed in both lower and upper banks. The mirror source display reflects only the first detected bank (bank={bank}).' },
+    'parser.mirrorBankMix': { ja: '{name} セクションが下位/上位バンク両方に配置されています。ミラー元領域の表示は最初に検出されたバンク(bank={bank})のみを反映しています。', en: 'Section {name} is placed in both lower and upper banks. The mirror source display reflects only the first detected bank (bank={bank}).', zh: '段 {name} 同时配置在低 bank 和高 bank。镜像源显示仅反映最先检测到的 bank (bank={bank})。', de: 'Sektion {name} liegt in beiden Banks. Die Mirror-Quelle zeigt nur den zuerst erkannten Bank (bank={bank}).' },
 
     // コンパイラ系
-    'compiler.unsupported':    { ja: '未対応', en: 'Unsupported' },
+    'compiler.unsupported': { ja: '未対応', en: 'Unsupported', zh: '不支持', de: 'Nicht unterstützt' },
 
     // ROM容量推定エラー
-    'rom.unsupportedPrefix':   { ja: '{name}: 未対応の型番プレフィックス',
-                                   en: '{name}: unsupported part-number prefix' },
-    'rom.tooShort':            { ja: '{name}: {prefix}系として短すぎ（最低8桁必要）',
-                                   en: '{name}: too short for {prefix} family (8 chars minimum)' },
-    'rom.unknownGroup':        { ja: '{name}: 未知のグループコード "{group}"（prefix={prefix}）',
-                                   en: '{name}: unknown group code "{group}" (prefix={prefix})' },
-    'rom.g24Mismatch':         { ja: '{name}: G24は第7桁=\'G\'固定だが \'{actual}\'',
-                                   en: '{name}: G24 requires 7th char=\'G\' but found \'{actual}\'' },
-    'rom.f22Mismatch':         { ja: '{name}: F22-F25系は第7桁=\'F\'固定だが \'{actual}\'',
-                                   en: '{name}: F22-F25 family requires 7th char=\'F\' but found \'{actual}\'' },
-    'rom.romCodeUndefined':    { ja: '{name}: ROMコード \'{code}\' が未定義（{series}）',
-                                   en: '{name}: ROM code \'{code}\' undefined ({series})' },
-    'rom.gradeJ':              { ja: 'Jグレード(85℃)',  en: 'J grade (85℃)' },
-    'rom.gradeL':              { ja: 'Lグレード(105℃)', en: 'L grade (105℃)' },
-    'rom.romFromCommon':       { ja: '（シリーズ固有マップに無く共通マップで補完）',
-                                   en: '(Filled from common map; not in series-specific map)' },
+    'rom.unsupportedPrefix': { ja: '{name}: 未対応の型番プレフィックス', en: '{name}: unsupported part-number prefix', zh: '{name}: 不支持的型号前缀', de: '{name}: nicht unterstützter Teil-Präfix' },
+    'rom.tooShort': { ja: '{name}: {prefix}系として短すぎ（最低8桁必要）', en: '{name}: too short for {prefix} family (8 chars minimum)', zh: '{name}: 作为 {prefix} 系列太短 (至少需要 8 位)', de: '{name}: zu kurz für {prefix}-Familie (mindestens 8 Zeichen)' },
+    'rom.unknownGroup': { ja: '{name}: 未知のグループコード "{group}"（prefix={prefix}）', en: '{name}: unknown group code "{group}" (prefix={prefix})', zh: '{name}: 未知的组代码 "{group}" (前缀={prefix})', de: '{name}: unbekannter Gruppencode "{group}" (Präfix={prefix})' },
+    'rom.g24Mismatch': { ja: '{name}: G24は第7桁=\'G\'固定だが \'{actual}\'', en: '{name}: G24 requires 7th char=\'G\' but found \'{actual}\'', zh: '{name}: G24 第 7 位应固定为 \'G\',但为 \'{actual}\'', de: '{name}: G24 erwartet 7. Zeichen=\'G\', gefunden \'{actual}\'' },
+    'rom.f22Mismatch': { ja: '{name}: F22-F25系は第7桁=\'F\'固定だが \'{actual}\'', en: '{name}: F22-F25 family requires 7th char=\'F\' but found \'{actual}\'', zh: '{name}: F22-F25 系列第 7 位应固定为 \'F\',但为 \'{actual}\'', de: '{name}: F22-F25 erwartet 7. Zeichen=\'F\', gefunden \'{actual}\'' },
+    'rom.romCodeUndefined': { ja: '{name}: ROMコード \'{code}\' が未定義（{series}）', en: '{name}: ROM code \'{code}\' undefined ({series})', zh: '{name}: ROM 代码 \'{code}\' 未定义 ({series})', de: '{name}: ROM-Code \'{code}\' undefiniert ({series})' },
+    'rom.gradeJ': { ja: 'Jグレード(85℃)', en: 'J grade (85℃)', zh: 'J 等级 (85℃)', de: 'J-Grad (85 °C)' },
+    'rom.gradeL': { ja: 'Lグレード(105℃)', en: 'L grade (105℃)', zh: 'L 等级 (105℃)', de: 'L-Grad (105 °C)' },
+    'rom.romFromCommon': { ja: '（シリーズ固有マップに無く共通マップで補完）', en: '(Filled from common map; not in series-specific map)', zh: '(系列专用 map 中没有,从通用 map 补充)', de: '(Aus gemeinsamer Map ergänzt; nicht in serien-spezifischer)' },
   },
 
   /** 現在言語のコードを返す */

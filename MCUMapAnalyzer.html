@@ -2950,16 +2950,28 @@ input[type="file"] { display: none; }
    Layer 0: Core Utilities
    ============================================================ */
 
-/** 対応言語の enum 定義（追加時はここに足す）。
- *  値はISO 639-1の小文字コード。HTML lang属性やlocalStorage格納にも使用。 */
-const LANG = Object.freeze({
-  JA: 'ja',
-  EN: 'en',
-  ZH: 'zh',  // 中文 (簡体字 / Simplified Chinese)
-  DE: 'de',  // Deutsch / German
+/** 対応言語の単一情報源.
+ *  言語1個追加するときは LANG_DEFS にエントリを追加するだけで:
+ *   ・LANG enum のキーが派生して生える
+ *   ・I18N.localeTag() が新コードを返す
+ *   ・FALLBACK_ORDER の参照は変わらない (既存 EN/JA が常にフォールバック)
+ *  以下は 同期が必要 (将来の TODO):
+ *   ・<select> の <option> (HTML静的): JS生成にすると 1 箇所で済むが現状静的
+ *   ・I18N.STRINGS の各キー: 翻訳追加は 257 キー × 1言語必要 (これはスケーラブルに自動化困難) */
+const LANG_DEFS = Object.freeze([
+  { code: 'ja', tag: 'ja-JP', selfName: '日本語' },
+  { code: 'en', tag: 'en-US', selfName: 'English' },
+  { code: 'zh', tag: 'zh-CN', selfName: '中文' },     // 簡体字 / Simplified Chinese
+  { code: 'de', tag: 'de-DE', selfName: 'Deutsch' },  // Deutsch / German
   // 将来追加例:
-  // KO: 'ko',     // 한국어
-});
+  // { code: 'ko', tag: 'ko-KR', selfName: '한국어' },
+]);
+
+/** ISO 639-1 小文字コードの enum. LANG_DEFS から派生.
+ *  HTML lang属性, localStorage, FALLBACK_ORDER 等で使用. */
+const LANG = Object.freeze(Object.fromEntries(
+  LANG_DEFS.map(d => [d.code.toUpperCase(), d.code])
+));
 
 /** 国際化(i18n)モジュール。
  *  ・全てのUI文言は STRINGS テーブルに { ja, en, ... } の形で登録する。
@@ -2976,7 +2988,17 @@ const I18N = {
   FALLBACK_ORDER: [LANG.EN, LANG.JA],
 
   /** 全文言テーブル。値オブジェクトの各キーが言語コード。
-   *  順次フェーズ毎に追加していく(現状はフェーズ1の動作確認用最小セット)。 */
+   *  対応言語は LANG_DEFS 参照。新規キー追加時は4言語(ja/en/zh/de)全て埋めること。
+   *
+   *  [スタイル指針]
+   *   ・エラーメッセージは原則 [原因] / [場所] / [対処] の3パートで揃える。
+   *     例) "ファイルサイズが大きすぎます({mb} MB)。{maxMb}MB以下にしてください。"
+   *         └ 原因 ─────────────┘ └ 対処 ──────────────────┘
+   *   ・プレースホルダの数値整形ポリシー:
+   *     - 1000 を超え得る一般数値 → 呼び出し側で Util.fmtNumber() を通してから渡す
+   *     - 2桁以下の固定列挙値(bank, MAA等) → 整形なしで生値を渡してOK
+   *     - 小数を含む値 → Util.fmtFloat()/fmtFixed() を通してから渡す
+   *   ・トーン: 過度に丁寧すぎず、技術文書として明快に。「お願いします」より「〜してください」。 */
   STRINGS: {
     // タブ名
     'tab.overview': { ja: '概要', en: 'Overview', zh: '概览', de: 'Übersicht' },
@@ -2992,8 +3014,12 @@ const I18N = {
     // 言語名（切替セレクタ表示用）。
     // i18n慣例: 各言語名は「自国語表記」で固定する（現在言語に追従させない）。
     // → ユーザが自分の母語が選択肢にあることを認識できる。
-    'lang.ja': { ja: '日本語', en: '日本語', zh: '日本語', de: '日本語' },
+    // 言語の自国語表記 (i18n慣例: どの UI 言語でも自国語名で表示).
+    // 将来 LANG_DEFS に追加した言語も同じ規則でここに足す.
+    'lang.ja': { ja: '日本語',  en: '日本語',  zh: '日本語',  de: '日本語'  },
     'lang.en': { ja: 'English', en: 'English', zh: 'English', de: 'English' },
+    'lang.zh': { ja: '中文',    en: '中文',    zh: '中文',    de: '中文'    },
+    'lang.de': { ja: 'Deutsch', en: 'Deutsch', zh: 'Deutsch', de: 'Deutsch' },
 
     // ====== フェーズ2: HTML静的部 ======
     // 入力スロット (map A / B)
@@ -3338,14 +3364,10 @@ const I18N = {
 
   /** 現在言語に対応する BCP47 ロケールタグ.
    *  数値整形(toLocaleString)の引数として使用する.
-   *  未知言語/未設定時は en-US にフォールバック. */
+   *  LANG_DEFS から検索、未知言語/未設定時は en-US にフォールバック. */
   localeTag() {
-    return ({
-      'ja': 'ja-JP',
-      'en': 'en-US',
-      'zh': 'zh-CN',
-      'de': 'de-DE',
-    })[I18N.current] || 'en-US';
+    const def = LANG_DEFS.find(d => d.code === I18N.current);
+    return def ? def.tag : 'en-US';
   },
 
   /** 言語を切り替える。localStorage に保存し、DOM にも適用する。
@@ -3367,7 +3389,11 @@ const I18N = {
     // App.refresh() があればJS生成部も再描画
     if (typeof App !== 'undefined' && App.refresh) {
       App.refresh();
-      // refresh で innerHTML が再生成されたあと、その中の data-i18n-attr 属性を反映
+      // refresh で innerHTML が再生成されたあと、その中の data-i18n-attr 属性を反映.
+      // [TODO] refresh() 内で innerHTML を構築する際に直接 I18N.t(...) で埋めるよう
+      //        各 view を書き換えれば、この二段呼び出しは不要になる. リスクと効果の
+      //        バランスを見て段階的に. 現状は data-i18n-attr 属性パスが残っている
+      //        のでこの二段が必要.
       I18N.applyToDom();
     }
   },
@@ -3455,9 +3481,11 @@ const Util = {
     return (b / 1024).toLocaleString(I18N.localeTag(),
       { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   },
-  /** 小数N桁の数値を locale 規則で整形 (% 記号は呼出側で付ける).
-   *  digits 省略時は1 (既存挙動互換). */
-  fmtPct(n, digits = 1) {
+  /** 固定小数桁(常にN桁出る)で locale 整形.
+   *  パーセント表示 (`12.5%`)・エラーメッセージ等で使う.
+   *  digits 省略時は1 (既存 fmtPct 互換).
+   *  [対比] fmtFloat は末尾0を省略 (8.0 → "8")、こちらは必ず指定桁出る (8 → "8.0"). */
+  fmtFixed(n, digits = 1) {
     return Number(n).toLocaleString(I18N.localeTag(),
       { minimumFractionDigits: digits, maximumFractionDigits: digits });
   },
@@ -3492,11 +3520,13 @@ const Util = {
   /** 内部識別子 → 表示名 (Compilersテーブル参照) */
   fmtCompiler(c) {
     if (!c) return '-';
-    // Compilers が定義されていればそれを使う
+    // 通常はこの分岐で displayName を返す。Compilers モジュールは parseMap などより前
+    // にロードされるので、UI レンダリング時には必ず定義済み.
     if (typeof Compilers !== 'undefined' && Compilers[c]) {
       return Compilers[c].displayName;
     }
-    // フォールバック
+    // フォールバック: Compilers が未定義のケース(早期エラー時の console.error 用途等)
+    // 念のための保険であり、通常パスでは到達しない.
     if (c === 'CCRL') return 'CC-RL';
     if (c === 'CCRX') return 'CC-RX';
     if (c === 'CCRH') return 'CC-RH';
@@ -3566,8 +3596,16 @@ const Util = {
     return s;
   },
 
-  /** 2次元配列を CSV 文字列に変換（CRLF改行、UTF-8 BOM付き）
-   *  Excelで正しく日本語を開けるように BOM を先頭に付ける */
+  /** 2次元配列を CSV 文字列に変換（CRLF改行、UTF-8 BOM付き）.
+   *  Excelで正しく日本語を開けるように BOM を先頭に付ける.
+   *
+   *  [R-LOC] CSV 数値は **常に英語ロケール固定** で出力する方針:
+   *   ・小数点は '.' (`x.toFixed(2)` を直接使う)
+   *   ・千区切りは付けない (`123456` を `123,456` にしない)
+   *   ・呼び出し側は Util.fmtNumber 等の locale-aware 関数を **使わない**
+   *  理由: ドイツ等のロケールでは小数点が ',' でCSVのカラム区切り ',' と
+   *        衝突しExcel/解析ツールでパースが壊れる. 国際的な互換性のため
+   *        CSVは英語固定で出し、UI側だけlocale対応する方針. */
   buildCSV(rows) {
     const BOM = '\uFEFF';
     return BOM + rows.map(r => r.map(Util.csvEscape).join(',')).join('\r\n') + '\r\n';
@@ -4471,6 +4509,10 @@ const DeviceDB = {
     // ピン数コード→数値の解決（情報表示用、判別不能でも継続）
     const pinCount = DeviceDB._resolvePinCount(pinCode, entry);
 
+    /* 構造化情報文字列の組み立て.
+     * [仕様] この文字列は **デバッグ/ログ用** で UI には直接表示されない
+     * (UI は r.deviceName / r.romInfo.series 等の個別フィールドを直接参照).
+     * そのため英語固定の "ROM:" "Pin:" プレフィックスのまま運用. */
     const parts = [`${deviceName}`, entry.series];
     parts.push(`ROM:${romCode}(${romKB}KB${romNote})`);
     if (pinCount) parts.push(`Pin:${pinCode}(${pinCount}pin)`);
@@ -5372,7 +5414,7 @@ const Compare = {
     const commonRatio = totalUnique > 0 ? commonCount / totalUnique : 0;
 
     if (commonRatio < 0.30) {
-      warnings.push(I18N.t('compare.warn.lowCommon', {pct: Util.fmtPct(commonRatio * 100, 0)}));
+      warnings.push(I18N.t('compare.warn.lowCommon', {pct: Util.fmtFixed(commonRatio * 100, 0)}));
     }
 
     return {
@@ -5649,7 +5691,10 @@ const SLOTS = {
 /* CAT_LABELS / TAB_INFO はi18n対応で getter 経由に変更。
    実体の文字列は I18N.STRINGS の 'cat.*' / 'header.*' に登録済み。
    呼び出し側の互換性のため、Object.defineProperty で動的な値を返すオブジェクトとして維持。
-   例: CAT_LABELS.code → I18N.t('cat.code') を返す */
+   例: CAT_LABELS.code → I18N.t('cat.code') を返す.
+   [TODO/perf] テーブル行ループ等で N×5 回呼ばれる箇所がある.
+   I18N.t は STRINGS のオブジェクトキー2回ルックアップで重くないが、
+   将来パフォーマンス計測で遅延が出たら setLang 時にキャッシュ生成する方式に切り替える. */
 const CAT_LABELS = {
   get code()  { return I18N.t('cat.code'); },
   get const() { return I18N.t('cat.const'); },
@@ -5794,7 +5839,7 @@ const Views = {
           const hasWarn = cmp.precheck.warnings.length > 0;
           const status = hasWarn ? '--warn' : '--ok';
           panel.className = `integrity-panel ${status}`;
-          const pctStr = cmp.summary.diffPct === null ? '-' : sign + Util.fmtPct(cmp.summary.diffPct, 2) + '%';
+          const pctStr = cmp.summary.diffPct === null ? '-' : sign + Util.fmtFixed(cmp.summary.diffPct, 2) + '%';
           panel.innerHTML = `
             <div class="integrity-status">${hasWarn ? '⚠' : '✓'} ${Util.escapeHtml(I18N.t('integrity.compareDone'))}</div>
             <div class="integrity-detail">${Util.escapeHtml(I18N.t('integrity.diffSummary', {sign, n: Util.fmtNumber(cmp.summary.diff), pct: pctStr}))}</div>
@@ -5902,7 +5947,7 @@ const Views = {
       grid.innerHTML = `
         <div class="kpi-card">
           <div class="kpi-label">${Util.escapeHtml(I18N.t('kpi.romCapacity'))}</div>
-          <div class="kpi-value">${r.romCapacityKB}<span class="kpi-unit">KB</span></div>
+          <div class="kpi-value">${Util.fmtNumber(r.romCapacityKB)}<span class="kpi-unit">KB</span></div>
           <div class="kpi-sub">${Util.fmtNumber(r.romCapacityB)} B</div>
         </div>
         <div class="kpi-card">
@@ -5912,7 +5957,7 @@ const Views = {
         </div>
         <div class="kpi-card ${cls}">
           <div class="kpi-label">${Util.escapeHtml(I18N.t('kpi.usageRate'))}</div>
-          <div class="kpi-value">${Util.fmtPct(pct)}<span class="kpi-unit">%</span></div>
+          <div class="kpi-value">${Util.fmtFixed(pct)}<span class="kpi-unit">%</span></div>
           <div class="kpi-sub">${label}</div>
         </div>
         <div class="kpi-card ${cls}">
@@ -6015,7 +6060,7 @@ const Views = {
       card.innerHTML = `
         <div class="card-header">
           <h2 class="card-title">${Util.escapeHtml(I18N.t('mirror.title'))}</h2>
-          <div class="card-subtitle">${Util.escapeHtml(I18N.t('mirror.cardSubtitle', {series: r.romInfo.series || '-', kb: r.romCapacityKB}))}</div>
+          <div class="card-subtitle">${Util.escapeHtml(I18N.t('mirror.cardSubtitle', {series: r.romInfo.series || '-', kb: Util.fmtNumber(r.romCapacityKB)}))}</div>
         </div>
         <div class="mirror-card">
           ${summaryHtml}
@@ -6057,7 +6102,7 @@ const Views = {
         <text x="${cx + rad}" y="${cy + 26}" text-anchor="middle" fill="#94a3b8" font-size="11">100%</text>
       `;
       const pe = document.getElementById('gaugePercent');
-      pe.textContent = Util.fmtPct(pct) + '%';
+      pe.textContent = Util.fmtFixed(pct) + '%';
       pe.style.color = color;
     },
     _renderDonut() {
@@ -6117,7 +6162,7 @@ const Views = {
           <span class="donut-legend-swatch" style="background:${CAT_COLORS[k]}"></span>
           <span class="donut-legend-name">${CAT_LABELS[k]}</span>
           <span class="donut-legend-value">${Util.fmtNumber(v)} B</span>
-          <span class="donut-legend-pct">${Util.fmtPct(pct)}%</span>
+          <span class="donut-legend-pct">${Util.fmtFixed(pct)}%</span>
         `;
         legend.appendChild(lg);
         startAngle = endAngle;
@@ -6359,7 +6404,7 @@ const Views = {
           <td class="col-numeric col-breakdown">${f.lib > 0 ? Util.fmtNumber(f.lib) : '-'}</td>
           <td class="col-numeric col-breakdown">${f.sys > 0 ? Util.fmtNumber(f.sys) : '-'}</td>
           <td class="col-numeric col-total">${Util.fmtNumber(f.total)}</td>
-          <td class="col-numeric">${Util.fmtPct(f.pct)}%</td>
+          <td class="col-numeric">${Util.fmtFixed(f.pct)}%</td>
         `;
         tbody.appendChild(tr);
       }
@@ -6389,6 +6434,12 @@ const Views = {
     },
   },
 
+  /* [TODO] Memmap モジュールは現状 ~870行のモノリシック構造.
+   *  将来分割するなら以下の3サブオブジェクトに切るのが妥当:
+   *    Memmap.Grid       — _renderGrid / _renderVisibleRows / _renderTicks
+   *    Memmap.Tooltip    — _showPinTooltip / _setupHoverTooltip
+   *    Memmap.DetailList — _renderDetailList
+   *  現状はリスクと効果のバランスで未着手.  */
   Memmap: {
     /** メモリマップタブの状態（ビュー固有なのでここに保持） */
     _state: {
@@ -6416,21 +6467,28 @@ const Views = {
       0x10000,  // 64KB
       0x40000,  // 256KB
     ],
+    /** ROW_BYTES_OPTIONS の中で `target` に log2 距離で最も近いインデックスを返す.
+     *  自動行幅選択 (_autoRowBytes) と Alt+ホイール拡縮の両方で使う共通ヘルパ.
+     *  距離は log2 で測ることで、2の累乗系列(32B/64B/128B/...)上の人間感覚と一致させる. */
+    _nearestRowBytesIndex(target) {
+      const opts = Views.Memmap.ROW_BYTES_OPTIONS;
+      let best = 0;
+      let bestDiff = Math.abs(Math.log2(opts[0]) - Math.log2(target));
+      for (let i = 1; i < opts.length; i++) {
+        const d = Math.abs(Math.log2(opts[i]) - Math.log2(target));
+        if (d < bestDiff) { best = i; bestDiff = d; }
+      }
+      return best;
+    },
+
     /** ROM容量から「初期表示で行数が100前後になる」行幅を自動選択。
      *  例: 64KB → 1KB/行(64行), 1MB → 8KB相当だが候補にないので16KB/行(64行),
      *      4MB → 64KB/行(64行) または 256KB/行(16行) → 64KB/行を選ぶ。 */
     _autoRowBytes(romBytes) {
       const TARGET_ROWS = 100;
       const idealBytes = romBytes / TARGET_ROWS;
-      // 候補から「最も idealBytes に近いもの」を選ぶ
-      const opts = Views.Memmap.ROW_BYTES_OPTIONS;
-      let best = opts[0];
-      let bestDiff = Math.abs(Math.log2(opts[0]) - Math.log2(idealBytes));
-      for (const o of opts) {
-        const d = Math.abs(Math.log2(o) - Math.log2(idealBytes));
-        if (d < bestDiff) { best = o; bestDiff = d; }
-      }
-      return best;
+      const i = Views.Memmap._nearestRowBytesIndex(idealBytes);
+      return Views.Memmap.ROW_BYTES_OPTIONS[i];
     },
     /** 現在の行幅を取得。手動指定なければ自動 */
     _currentRowBytes() {
@@ -6472,8 +6530,19 @@ const Views = {
     _setupOnce() {
       if (Views.Memmap._setup) return;
       Views.Memmap._setup = true;
+      // 各責務を private 関数に分離 (元は一つの巨大関数だった、レビュー結果で分割).
+      Views.Memmap._bindModeTabs();
+      Views.Memmap._bindSearch();
+      Views.Memmap._bindRowBytesSelect();
+      Views.Memmap._bindVirtualScroll();
+      Views.Memmap._bindAltWheelZoom();
+      Views.Memmap._bindGridClickClear();
+      Views.Memmap._bindEscClear();
+      Views.Memmap._setupHoverTooltip();
+    },
 
-      // モード切替タブ
+    /** モード切替タブ (カテゴリ別 / ファイル別) のクリックハンドラ */
+    _bindModeTabs() {
       document.querySelectorAll('#memmapModeTabs .memmap-mode-tab').forEach(tab => {
         tab.addEventListener('click', () => {
           document.querySelectorAll('#memmapModeTabs .memmap-mode-tab').forEach(t => t.classList.remove('active'));
@@ -6482,130 +6551,123 @@ const Views = {
           Views.Memmap._renderAll();
         });
       });
+    },
 
-      // 検索
+    /** ファイル名検索ボックス. debounce で 150ms 抑制. [R-075] */
+    _bindSearch() {
       const sb = document.getElementById('memmapSearch');
-      if (sb) {
-        // [R-075] debounce で再描画(_renderAll)の高頻度呼び出しを抑制
-        const onMemmapSearch = Util.debounce((value) => {
-          Views.Memmap._state.search = (value || '').toLowerCase();
-          Views.Memmap._renderAll();
-        }, 150);
-        sb.addEventListener('input', (e) => onMemmapSearch(e.target.value));
-      }
+      if (!sb) return;
+      const onMemmapSearch = Util.debounce((value) => {
+        Views.Memmap._state.search = (value || '').toLowerCase();
+        Views.Memmap._renderAll();
+      }, 150);
+      sb.addEventListener('input', (e) => onMemmapSearch(e.target.value));
+    },
 
-      // 行幅セレクトボックス
+    /** 行幅セレクトボックス. 拡縮後はフォーカス位置を画面中央に維持. */
+    _bindRowBytesSelect() {
       const rbSelect = document.getElementById('memmapRowBytesSelect');
-      if (rbSelect) {
-        rbSelect.addEventListener('change', (e) => {
-          // 拡縮前のフォーカス位置（選択中なら選択アドレス、なしならビューポート中央のアドレス）を保存
-          const focusAddr = Views.Memmap._currentFocusAddress();
-          const v = e.target.value;
-          if (v === 'auto') {
-            Views.Memmap._state.rowBytes = null;
-            Views.Memmap._state.rowBytesManual = false;
-          } else {
-            Views.Memmap._state.rowBytes = parseInt(v);
-            Views.Memmap._state.rowBytesManual = true;
-          }
-          Views.Memmap._renderAll();
-          // 拡縮後、フォーカス位置が画面中央に来るようスクロール
-          Views.Memmap._scrollAddrToCenter(focusAddr);
-        });
-      }
-
-      // 仮想スクロール：viewportのスクロール監視
-      const vp = document.getElementById('memmapViewport');
-      if (vp) {
-        vp.addEventListener('scroll', () => {
-          /* 描画は requestAnimationFrame で間引き（高頻度イベント対策）
-             [R-048] _scrollRaf は「描画予約済みフラグ」として運用:
-               null    → 予約なし（次の scroll で予約する）
-               非null  → 予約あり（rafハンドル値が入っている、追加予約しない）
-             RAF 実行時に再度 null に戻して次回予約を許可する。
-             cancelAnimationFrame を呼ばないのは、scroll停止後の最後の描画は完了させたいため。 */
-          if (Views.Memmap._scrollRaf) return;
-          Views.Memmap._scrollRaf = requestAnimationFrame(() => {
-            Views.Memmap._scrollRaf = null;
-            Views.Memmap._renderVisibleRows();
-          });
-        }, { passive: true });
-
-        // Alt+ホイールで拡縮（PCのみ実用、スマホはピンチ非対応で代替UIあり）。
-        // マウスカーソル位置のアドレスを基準点として、拡縮後もカーソル位置に
-        // 同じアドレスが来るようスクロールする(画像ビューア等で一般的なUX)。
-        vp.addEventListener('wheel', (e) => {
-          if (!e.altKey) return;
-          e.preventDefault();
-
-          // 拡縮前: マウス位置(viewport内Y座標) のアドレスを記録
-          const vpRect = vp.getBoundingClientRect();
-          let mouseY = e.clientY - vpRect.top;
-          // viewport の縦範囲内にクランプ(端でホイール時の挙動を安定化)
-          mouseY = Math.max(0, Math.min(vp.clientHeight, mouseY));
-          const vBefore = Views.Memmap._vstate;
-          const oldRowHeight = vBefore ? vBefore.rowHeight : 26;
-          const oldRowBytes  = Views.Memmap._currentRowBytes();
-          const focusRow  = Math.floor((vp.scrollTop + mouseY) / oldRowHeight);
-          const focusAddr = focusRow * oldRowBytes;
-
-          // 行幅候補を1段階シフト
-          const opts = Views.Memmap.ROW_BYTES_OPTIONS;
-          let i = opts.indexOf(oldRowBytes);
-          if (i < 0) {
-            // 候補に無い値なら近いものに丸めてからシフト
-            i = 0;
-            let bestDiff = Infinity;
-            for (let k = 0; k < opts.length; k++) {
-              const d = Math.abs(Math.log2(opts[k]) - Math.log2(oldRowBytes));
-              if (d < bestDiff) { i = k; bestDiff = d; }
-            }
-          }
-          // ホイール上方向(deltaY<0)で拡大=行幅小さく(i減)、下方向で縮小(i増)
-          if (e.deltaY < 0) i = Math.max(0, i - 1);
-          else              i = Math.min(opts.length - 1, i + 1);
-          if (opts[i] === oldRowBytes) return;  // 端で動かないなら何もしない
-
-          Views.Memmap._state.rowBytes = opts[i];
+      if (!rbSelect) return;
+      rbSelect.addEventListener('change', (e) => {
+        const focusAddr = Views.Memmap._currentFocusAddress();
+        const v = e.target.value;
+        if (v === 'auto') {
+          Views.Memmap._state.rowBytes = null;
+          Views.Memmap._state.rowBytesManual = false;
+        } else {
+          Views.Memmap._state.rowBytes = parseInt(v);
           Views.Memmap._state.rowBytesManual = true;
-          const selBox = document.getElementById('memmapRowBytesSelect');
-          if (selBox) selBox.value = String(opts[i]);
-          Views.Memmap._renderAll();
+        }
+        Views.Memmap._renderAll();
+        Views.Memmap._scrollAddrToCenter(focusAddr);
+      });
+    },
 
-          // 拡縮後: focusAddr が マウス位置(mouseY) に来るよう scrollTop を調整
-          const vAfter = Views.Memmap._vstate;
-          if (!vAfter) return;
-          const newRowHeight = vAfter.rowHeight;
-          const newRowBytes  = vAfter.rowBytes;
-          const targetRow = Math.floor(focusAddr / newRowBytes);
-          const targetY   = targetRow * newRowHeight;
-          const maxScroll = Math.max(0, vAfter.numRows * newRowHeight - vp.clientHeight);
-          vp.scrollTop = Math.max(0, Math.min(maxScroll, targetY - mouseY));
+    /** 仮想スクロール: viewport のスクロールに requestAnimationFrame で追従.
+     *  [R-048] _scrollRaf は「描画予約済みフラグ」として運用:
+     *    null    → 予約なし、次のscrollで予約する
+     *    非null  → 予約あり (rafハンドル)、追加予約しない
+     *  RAF実行時に null に戻して次回予約を許可する.
+     *  cancelAnimationFrameを呼ばないのは、scroll停止後の最後の描画は完了させたいため. */
+    _bindVirtualScroll() {
+      const vp = document.getElementById('memmapViewport');
+      if (!vp) return;
+      vp.addEventListener('scroll', () => {
+        if (Views.Memmap._scrollRaf) return;
+        Views.Memmap._scrollRaf = requestAnimationFrame(() => {
+          Views.Memmap._scrollRaf = null;
           Views.Memmap._renderVisibleRows();
-        }, { passive: false });
-      }
-
-      // グリッドの空白部分をクリックで選択解除
-      const grid = document.getElementById('memmapGrid');
-      if (grid) {
-        grid.addEventListener('click', (e) => {
-          // セグメント自身のクリックは bubble するが、segment は data-idx を持つので区別
-          if (!(e.target instanceof Element)) return;
-          if (!e.target.closest('.memmap-segment')) {
-            Views.Memmap._clearSelection();
-          }
         });
-      }
+      }, { passive: true });
+    },
 
-      // ESCキーで選択解除
+    /** Alt+ホイールでメモリマップを拡縮 (PCのみ実用、スマホはピンチ非対応で代替UIあり).
+     *  マウスカーソル位置のアドレスを基準点として、拡縮後もカーソル位置に
+     *  同じアドレスが来るようスクロールする (画像ビューア等で一般的なUX). */
+    _bindAltWheelZoom() {
+      const vp = document.getElementById('memmapViewport');
+      if (!vp) return;
+      vp.addEventListener('wheel', (e) => {
+        if (!e.altKey) return;
+        e.preventDefault();
+
+        // 拡縮前: マウス位置(viewport内Y座標) のアドレスを記録
+        const vpRect = vp.getBoundingClientRect();
+        let mouseY = e.clientY - vpRect.top;
+        mouseY = Math.max(0, Math.min(vp.clientHeight, mouseY));
+        const vBefore = Views.Memmap._vstate;
+        const oldRowHeight = vBefore ? vBefore.rowHeight : 26;
+        const oldRowBytes  = Views.Memmap._currentRowBytes();
+        const focusRow  = Math.floor((vp.scrollTop + mouseY) / oldRowHeight);
+        const focusAddr = focusRow * oldRowBytes;
+
+        // 行幅候補を1段階シフト. opts に無い値なら最近接にスナップしてからシフト.
+        const opts = Views.Memmap.ROW_BYTES_OPTIONS;
+        let i = opts.indexOf(oldRowBytes);
+        if (i < 0) i = Views.Memmap._nearestRowBytesIndex(oldRowBytes);
+        if (e.deltaY < 0) i = Math.max(0, i - 1);          // 上方向で拡大=行幅小さく
+        else              i = Math.min(opts.length - 1, i + 1);  // 下方向で縮小
+        if (opts[i] === oldRowBytes) return;  // 端で動かないなら何もしない
+
+        Views.Memmap._state.rowBytes = opts[i];
+        Views.Memmap._state.rowBytesManual = true;
+        const selBox = document.getElementById('memmapRowBytesSelect');
+        if (selBox) selBox.value = String(opts[i]);
+        Views.Memmap._renderAll();
+
+        // 拡縮後: focusAddr が マウス位置(mouseY) に来るよう scrollTop を調整
+        const vAfter = Views.Memmap._vstate;
+        if (!vAfter) return;
+        const targetRow = Math.floor(focusAddr / vAfter.rowBytes);
+        const targetY   = targetRow * vAfter.rowHeight;
+        const maxScroll = Math.max(0, vAfter.numRows * vAfter.rowHeight - vp.clientHeight);
+        vp.scrollTop = Math.max(0, Math.min(maxScroll, targetY - mouseY));
+        Views.Memmap._renderVisibleRows();
+      }, { passive: false });
+    },
+
+    /** グリッドの空白部分(セグメント以外)をクリックで選択解除. */
+    _bindGridClickClear() {
+      const grid = document.getElementById('memmapGrid');
+      if (!grid) return;
+      grid.addEventListener('click', (e) => {
+        if (!(e.target instanceof Element)) return;
+        if (!e.target.closest('.memmap-segment')) {
+          Views.Memmap._clearSelection();
+        }
+      });
+    },
+
+    /** ESCキーで選択解除 (memmap タブ表示中のみ).
+     *  [TODO] 現状 document レベルに各 view から keydown を生やす方式だが、
+     *         App._setupKeyboardA11y に集約して「タブ別の ESC ハンドラ」を
+     *         レジストリ方式で管理すると複数 view から増えても干渉しない. */
+    _bindEscClear() {
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && AppState.activeTab === 'memmap') {
           Views.Memmap._clearSelection();
         }
       });
-
-      // ホバーツールチップ（マウスにくっついてファイル名表示）
-      Views.Memmap._setupHoverTooltip();
     },
 
     _clearSelection() {
@@ -6789,7 +6851,10 @@ const Views = {
      *  異なる緑系の '#0e7c4a' に変更し、15色すべてが視覚的に区別できるようにした。
      *  [R-055] キャッシュ化: _renderGrid と _renderDetailList の両方から
      *  毎回呼ばれていたため、placements 参照が同じならキャッシュ済みのマップを返す。
-     *  AppState.mapResult.placements は parseMap 後不変なので参照同一性で判定可能。 */
+     *  AppState.mapResult.placements は parseMap 後不変なので参照同一性で判定可能。
+     *  [前提] placements は parseMap でしか作られず、in-place mutation しない.
+     *  もし将来 in-place で要素追加するような変更が入ると、参照は同じだが内容が
+     *  古くなりキャッシュが食い違うので、その場合は別のキャッシュキーが必要. */
     _buildFileColorMap(placements) {
       // キャッシュ判定: 直近呼び出しと placements 参照が同じならキャッシュを返す
       if (Views.Memmap._fileColorMapCache &&
@@ -6834,7 +6899,7 @@ const Views = {
       if (!Views.Memmap._dimsCache) {
         const cs = getComputedStyle(document.documentElement);
         const px = (name) => parseFloat(cs.getPropertyValue(name)) || 0;
-        Views.Memmap._dimsCache = {
+        const dims = {
           addrColPC:   px('--memmap-addr-col'),
           addrColMob:  px('--memmap-addr-col-mobile'),
           usageColPC:  px('--memmap-usage-col'),
@@ -6842,11 +6907,27 @@ const Views = {
           rowGapPC:    px('--memmap-row-gap'),
           rowGapMob:   px('--memmap-row-gap-mobile'),
         };
+        // 防御的検証: CSS変数の取得失敗(0/NaN)を起動時にコンソール警告.
+        // 将来 :root から削除した/メディアクエリ内に閉じた等の事故を早期発見する.
+        if (typeof console !== 'undefined' && console.warn) {
+          for (const [k, v] of Object.entries(dims)) {
+            if (!Number.isFinite(v) || v <= 0) {
+              console.warn(`Views.Memmap._getDims: CSS変数の読み取りに失敗 (${k}=${v}). :root定義を確認してください.`);
+            }
+          }
+        }
+        Views.Memmap._dimsCache = dims;
       }
       return Views.Memmap._dimsCache;
     },
 
-    /** メイン描画：行データを事前計算して保持し、仮想スクロールで可視範囲のみDOM化 */
+    /** メイン描画：行データを事前計算して保持し、仮想スクロールで可視範囲のみDOM化.
+     *  [TODO] 関数が大きい(160行超). 将来は以下の純粋関数に分解してテスト容易化:
+     *    _computeAltMap(placements, mode) → Map<idx, bool>
+     *    _computeGaps(placements, total)  → [{address, size}]
+     *    _computeRowSegs(placements, gaps, rowBytes, total, search) → {rowSegs, usedBytesByRow}
+     *    _computeMirrorRange(mirrorInfo, romInfo, total) → {lower, upper} | null
+     *  本体は組み立てと _vstate 反映 + 描画呼び出しに専念する形にできる. */
     _renderGrid() {
       const r = AppState.mapResult;
       const grid = document.getElementById('memmapGrid');
@@ -7235,7 +7316,7 @@ const Views = {
         // 使用率
         const usageEl = document.createElement('div');
         usageEl.className = 'memmap-row-usage';
-        usageEl.textContent = used === 0 ? '-' : Util.fmtPct(usedPct, 0) + '%';
+        usageEl.textContent = used === 0 ? '-' : Util.fmtFixed(usedPct, 0) + '%';
         rowEl.appendChild(usageEl);
 
         frag.appendChild(rowEl);
@@ -7453,7 +7534,7 @@ const Views = {
           ${tpl.kpiCard({
             label: I18N.t('compare.kpi.diff'),
             value: `${dSign}${Util.fmtNumber(d)}<span class="kpi-unit">B</span>`,
-            sub:   dPct === null ? I18N.t('compare.kpi.diffSubNoBase') : I18N.t('compare.kpi.diffSub', {sign: dSign, pct: Util.fmtPct(dPct, 2)}),
+            sub:   dPct === null ? I18N.t('compare.kpi.diffSubNoBase') : I18N.t('compare.kpi.diffSub', {sign: dSign, pct: Util.fmtFixed(dPct, 2)}),
             kind:  dCls,
           })}
           ${tpl.kpiCard({
@@ -7468,7 +7549,7 @@ const Views = {
           })}
           ${tpl.kpiCard({
             label: I18N.t('compare.kpi.commonRatio'),
-            value: `${Util.fmtPct(stats.commonRatio * 100, 0)}<span class="kpi-unit">%</span>`,
+            value: `${Util.fmtFixed(stats.commonRatio * 100, 0)}<span class="kpi-unit">%</span>`,
             // [R-040] 分母は「全ユニークファイル数」(baseSet ∪ targetSet)。
             // Compare.precheck で baseTotal=baseSet.size を返しているため
             // baseTotal + targetOnly = commonCount + baseOnly + targetOnly = ユニーク総数 と等価。
@@ -7889,7 +7970,7 @@ const App = {
     // サイズ上限チェック（過大ファイル対策、Constants.MAX_FILE_SIZE_MB MB）
     const maxSize = Constants.MAX_FILE_SIZE_MB * 1024 * 1024;
     if (file.size > maxSize) {
-      App._showError(I18N.t('error.tooLarge', {mb: Util.fmtPct(file.size/1024/1024, 1), maxMb: Constants.MAX_FILE_SIZE_MB}));
+      App._showError(I18N.t('error.tooLarge', {mb: Util.fmtFloat(file.size/1024/1024, 1), maxMb: Constants.MAX_FILE_SIZE_MB}));
       return;
     }
     const cfg = SLOTS[slot];
